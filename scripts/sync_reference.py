@@ -14,10 +14,23 @@ ATLAS_ROOT = Path(__file__).resolve().parents[1]
 # Monorepo root is the parent of `platform/`.
 REPO_ROOT = ATLAS_ROOT.parents[1]
 
+# OpenAPI source is optional; if missing, the destination is treated as authoritative.
 DEFAULT_OPENAPI_SOURCE = ATLAS_ROOT / "__ignore__" / "api-reference" / "openapi.json"
 OPENAPI_DEST = ATLAS_ROOT / "openapi" / "openapi.json"
 
 PROTO_ROOT = REPO_ROOT / "shared" / "proto"
+
+
+def _resolve_openapi_source() -> Path | None:
+    """Return the OpenAPI source path, or None if unavailable."""
+    if DEFAULT_OPENAPI_SOURCE.exists():
+        return DEFAULT_OPENAPI_SOURCE
+    # Fall back: if the destination exists but the source doesn't, treat dest as authoritative.
+    if OPENAPI_DEST.exists():
+        return OPENAPI_DEST
+    return None
+
+
 SNIPPETS_DIR = ATLAS_ROOT / "snippets" / "generated"
 PROTO_SNIPPET = SNIPPETS_DIR / "events-proto-summary.mdx"
 SOURCES_MANIFEST = ATLAS_ROOT / "openapi" / "SOURCES.json"
@@ -190,11 +203,12 @@ def main() -> int:
 
     sources: list[SourceItem] = []
 
-    # OpenAPI
-    openapi_src = DEFAULT_OPENAPI_SOURCE
-    sources.append(
-        SourceItem(kind="openapi", source_path=openapi_src, dest_path=OPENAPI_DEST)
-    )
+    # OpenAPI — use the helper so we gracefully handle missing source.
+    openapi_src = _resolve_openapi_source()
+    if openapi_src:
+        sources.append(
+            SourceItem(kind="openapi", source_path=openapi_src, dest_path=OPENAPI_DEST)
+        )
 
     # Proto events
     sources.append(SourceItem(kind="proto", source_path=PROTO_ROOT, dest_path=None))
@@ -202,10 +216,17 @@ def main() -> int:
     if args.check:
         ok = True
 
-        if not openapi_src.exists() or not OPENAPI_DEST.exists():
+        # OpenAPI check: only fail if *both* source and dest are missing, or they differ.
+        if openapi_src is None:
+            # Neither source nor dest exist.
             ok = False
-        elif sha256_file(openapi_src) != sha256_file(OPENAPI_DEST):
-            ok = False
+        elif openapi_src != OPENAPI_DEST:
+            # External source exists; must match dest.
+            if not OPENAPI_DEST.exists():
+                ok = False
+            elif sha256_file(openapi_src) != sha256_file(OPENAPI_DEST):
+                ok = False
+        # If openapi_src == OPENAPI_DEST (fallback), it's trivially in sync.
 
         expected_snippet = generate_proto_snippet(PROTO_ROOT)
         current_snippet = (

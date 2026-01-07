@@ -7,7 +7,7 @@
       "dest": "openapi/openapi.json",
       "kind": "openapi",
       "sha256": "919eb7a392aafe9825cc9fc0e5b2174643803e1f825816a5a2cb95fb20a94aa9",
-      "source": "platform/atlas/__ignore__/api-reference/openapi.json"
+      "source": "platform/atlas/openapi/openapi.json"
     },
     {
       "dest": null,

@@ -7,8 +7,9 @@
         "audit:docs": "python3 scripts/docs_audit.py",
         "check:docs": "python3 scripts/docs_audit.py --check",
         "check:links": "python3 scripts/check_links.py",
+        "check:ownership": "python3 scripts/check_ownership.py --check",
         "sync:reference": "python3 scripts/sync_reference.py",
         "check:reference": "python3 scripts/sync_reference.py --check",
-        "check:all": "npm run check:reference && npm run check:docs && npm run check:links"
+        "check:all": "npm run check:reference && npm run check:docs && npm run check:links && npm run check:ownership"
     }
 }

@@ -16,8 +16,8 @@ The repo contains multiple deployment targets (local/dev, cloud, and cluster-bas
 
 ## Where to find the real instructions
 
--   Ops runbooks: [/operations/RUNBOOK](/operations/RUNBOOK)
--   Platform runbook: [/platform/RUNBOOK](/platform/RUNBOOK)
+-   Ops runbooks: [Operational runbooks](/developer/operations/runbooks/incident-response)
+-   Disaster recovery: [DR runbook](/developer/operations/runbooks/disaster-recovery)
 -   Deployment scripts: `scripts/` (repo root)
 -   Service-specific build/run targets: each service’s `Makefile` / `README.md`
 

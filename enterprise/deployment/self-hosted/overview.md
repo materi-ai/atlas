@@ -21,8 +21,8 @@ This page stays intentionally high-level and links to the repo’s operational s
 
 ## Sources of truth in this repo
 
--   Platform runbook: [/platform/RUNBOOK](/platform/RUNBOOK)
--   Operations runbooks: [/operations/RUNBOOK](/operations/RUNBOOK)
+-   Incident response: [Incident response runbook](/developer/operations/runbooks/incident-response)
+-   Disaster recovery: [DR runbook](/developer/operations/runbooks/disaster-recovery)
 -   Environment configuration examples live under `operations/` and `domain/`
 
 ## Next steps
