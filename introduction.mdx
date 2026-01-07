@@ -1,0 +1,37 @@
+---
+title: 'Introduction'
+description: 'Start here: how to navigate Materi docs and find canonical specs'
+---
+
+Materi is an AI-native content management platform designed for **real-time collaboration** and an **event-driven** backend.
+
+This documentation is organized by audience:
+
+-   **Getting Started**: orientation and core concepts
+-   **Customer Docs**: product workflows
+-   **Developer Guide**: integration + service architecture
+-   **API Reference**: canonical REST/WebSocket/SDK reference (generated from specs)
+-   **Enterprise**: self-hosting, security, scale
+-   **Internal (Staff)**: operational and engineering docs
+
+<CardGroup cols={2}>
+    <Card title="Quickstart" icon="rocket" href="/quickstart">
+        Orient yourself and pick the right path.
+    </Card>
+    <Card title="Architecture overview" icon="diagram-project" href="/architecture-overview">
+        Understand the service boundaries and data flow.
+    </Card>
+    <Card title="Core concepts" icon="cube" href="/concepts">
+        Learn the primitives: workspaces, documents, events, collaboration.
+    </Card>
+    <Card title="Documentation contract" icon="file-check" href="/documentation-contract">
+        Standards for maintainable, cross-repo documentation.
+    </Card>
+</CardGroup>
+
+## Canonical sources
+
+When this site makes a claim about the system, it should be traceable to a canonical source.
+
+-   OpenAPI (site-local): `/openapi/openapi.json`
+-   Event schemas (protobuf): derived from `shared/proto/*.proto` (see Concepts)

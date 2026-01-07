@@ -1,0 +1,77 @@
+---
+title: 'Concepts'
+description: 'Core primitives: workspaces, documents, events, collaboration, security'
+---
+
+import EventProtoSummary from '/snippets/generated/events-proto-summary.mdx';
+
+This page defines the platform primitives used throughout Materi documentation.
+It is intentionally **conceptual** and links out to **canonical specs** when precision matters.
+
+## Workspaces
+
+A **workspace** is the primary multi-tenant boundary for users, documents, and policy.
+
+What to expect:
+
+-   Users are members of one or more workspaces.
+-   Most document access decisions are made in the context of a workspace.
+
+## Users and identities
+
+A **user** represents a human or system actor.
+Identity and access are centrally managed by the authentication/administration surface (Shield).
+
+High-level capabilities referenced in the repo documentation include:
+
+-   JWT-based auth flows
+-   SSO integrations (e.g., SAML) for enterprise
+-   RBAC-style authorization concepts
+
+## Documents
+
+A **document** is the primary collaborative unit.
+In Materi, documents are designed to support:
+
+-   CRUD operations via the HTTP API
+-   Real-time concurrent editing via WebSocket collaboration
+-   Version history / lifecycle events
+
+## Real-time collaboration
+
+Collaboration is handled as an always-on stream of operations rather than occasional edits.
+
+Core elements:
+
+-   **Session/connection**: a client’s WebSocket presence within a document
+-   **Operation**: an atomic edit submitted by a client
+-   **Transform**: conflict resolution that reconciles concurrent operations
+-   **Presence**: cursor/selection/user status propagated to other collaborators
+
+## Events
+
+Events are emitted by services to synchronize work across boundaries.
+
+Guiding idea:
+
+-   If a change must be observed by another service (or by downstream consumers), it becomes an **event**.
+
+### Event schemas (protobuf)
+
+<EventProtoSummary />
+
+### OpenAPI (HTTP surface)
+
+HTTP endpoints are defined by the OpenAPI spec published into this docs site:
+
+-   `/openapi/openapi.json`
+
+## Security model (high level)
+
+This documentation treats security as a first-class behavior:
+
+-   **Authentication**: who you are
+-   **Authorization**: what you can do
+-   **Auditability**: what happened and who triggered it
+
+Concrete endpoint shapes and auth requirements should always be validated against the canonical OpenAPI spec and the relevant service implementation.

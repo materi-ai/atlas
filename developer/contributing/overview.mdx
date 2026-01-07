@@ -1,0 +1,36 @@
+---
+title: 'Contributing'
+description: 'How to work in the Materi monorepo and keep docs/specs in sync'
+---
+
+This section explains how to contribute changes across Materi services _and_ keep documentation verifiable.
+
+## Prerequisites
+
+-   Access to the monorepo and the relevant service(s) under `domain/`, `platform/`, `products/`, or `operations/`.
+-   Ability to run the service locally (see the service `README.md` / `Makefile`).
+
+## What “done” means
+
+A change is considered complete when:
+
+-   Code behavior is correct and tested.
+-   If behavior is user-facing, the corresponding docs are updated.
+-   If behavior is contract/surface-area, the canonical spec is updated:
+    -   REST/API: OpenAPI (and derived reference pages)
+    -   Events: protobuf schemas in `shared/proto`
+
+## Where docs live
+
+-   Atlas site: `platform/atlas`
+-   Canonical event schemas: `shared/proto/*.proto`
+-   Source-of-truth policy: [/documentation-contract](/documentation-contract)
+
+## Fast commands (Atlas)
+
+From `platform/atlas`:
+
+-   Local preview: `mint dev`
+-   Sync canonical references: `python3 scripts/sync_reference.py`
+-   Verify no drift: `python3 scripts/sync_reference.py --check`
+-   Audit stubs/missing pages: `python3 scripts/docs_audit.py`

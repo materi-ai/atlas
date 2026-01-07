@@ -1,0 +1,33 @@
+---
+name: 'Verify webhook signature (Node.js)'
+description: 'HMAC-SHA256 verification for X-Hub-Signature-256 (sha256=<hex>)'
+---
+
+This matches the Shield implementation in `domain/shield/apps/cicd/webhooks.py`.
+
+```js
+import crypto from 'node:crypto';
+
+export function verifySignature(payloadBytes, signatureHeader, secret) {
+    if (!signatureHeader || !secret) return false;
+    const parts = signatureHeader.split('=');
+    if (parts.length < 2) return false;
+
+    const algo = parts[0];
+    const expected = parts.slice(1).join('=');
+    if (algo !== 'sha256') return false;
+
+    const computed = crypto
+        .createHmac('sha256', Buffer.from(secret, 'utf8'))
+        .update(payloadBytes)
+        .digest('hex');
+
+    return crypto.timingSafeEqual(Buffer.from(computed, 'utf8'), Buffer.from(expected, 'utf8'));
+}
+```
+
+Notes:
+
+-   Pass the **raw bytes** (e.g., `Buffer`), not a parsed JSON object.
+-   `timingSafeEqual` requires buffers of equal length; using the computed/expected hex strings avoids
+    length mismatches unless the header is malformed.

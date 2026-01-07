@@ -1,0 +1,30 @@
+---
+name: 'Verify webhook signature (Python)'
+description: 'HMAC-SHA256 verification for X-Hub-Signature-256 (sha256=<hex>)'
+---
+
+This matches the Shield implementation in `domain/shield/apps/cicd/webhooks.py`.
+
+```python
+import hashlib
+import hmac
+
+def verify_signature(payload_bytes: bytes, signature_header: str, secret: str) -> bool:
+    if not signature_header or not secret:
+        return False
+
+    if "=" not in signature_header:
+        return False
+
+    algo, expected = signature_header.split("=", 1)
+    if algo != "sha256":
+        return False
+
+    computed = hmac.new(secret.encode("utf-8"), payload_bytes, hashlib.sha256).hexdigest()
+    return hmac.compare_digest(computed, expected)
+```
+
+Common pitfalls:
+
+-   Verify against the **raw request body bytes** (before JSON parsing).
+-   Use constant-time comparison (`hmac.compare_digest`).

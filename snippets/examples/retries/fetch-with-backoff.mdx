@@ -1,0 +1,43 @@
+---
+name: 'HTTP retries with backoff (Node.js fetch)'
+description: 'Copy/paste retry wrapper using exponential backoff and jitter'
+---
+
+This snippet works on Node.js 18+ (built-in `fetch`).
+
+```js
+const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
+
+export async function fetchWithRetries(url, init = {}, opts = {}) {
+    const {
+        attempts = 3,
+        baseDelayMs = 250,
+        maxDelayMs = 2000,
+        retryOn = (status) => status >= 500 || status === 429,
+    } = opts;
+
+    let lastError;
+
+    for (let i = 0; i < attempts; i += 1) {
+        try {
+            const res = await fetch(url, init);
+            if (!retryOn(res.status)) return res;
+
+            lastError = new Error(`retryable status: ${res.status}`);
+        } catch (err) {
+            lastError = err;
+        }
+
+        const exp = Math.min(maxDelayMs, baseDelayMs * 2 ** i);
+        const jitter = Math.floor(Math.random() * 100);
+        await sleep(exp + jitter);
+    }
+
+    throw lastError ?? new Error('request failed after retries');
+}
+```
+
+Notes:
+
+-   Default retries are conservative (`attempts=3`).
+-   For idempotent operations, you can safely retry more aggressively.

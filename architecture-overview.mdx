@@ -1,0 +1,60 @@
+---
+title: 'Architecture overview'
+description: 'Service boundaries, data flow, and canonical specs'
+---
+
+import EventProtoSummary from '/snippets/generated/events-proto-summary.mdx';
+
+Materi is organized as an event-driven system with a REST gateway, a real-time collaboration service, and an authentication/administration service.
+At a high level, the platform combines **HTTP APIs** with **WebSocket collaboration**, and uses **Redis Streams** for cross-service synchronization.
+
+## Service map (high level)
+
+The canonical service list and responsibilities live in the monorepo docs; this page is the reader-friendly map.
+
+| Service    | Responsibility (summary)                                                   | Primary stack          | Code location                        |
+| ---------- | -------------------------------------------------------------------------- | ---------------------- | ------------------------------------ |
+| API        | REST/HTTP gateway for documents, workspaces, AI features; publishes events | Go (Fiber)             | `domain/api`                         |
+| Relay      | WebSocket real-time collaboration; OT + presence; event-driven sync        | Rust (Axum)            | `domain/relay`                       |
+| Shield     | Authentication/authorization, user management, admin                       | Python (Django)        | `domain/shield`                      |
+| Manuscript | Schema/spec “single truth” (events, envelope)                              | Proto / schema tooling | `domain/manuscript` + `shared/proto` |
+| Printery   | Event consumer hub (planned)                                               | Go                     | `domain/printery`                    |
+
+## Data flow patterns
+
+### 1) Request/response (HTTP)
+
+Typical workflow:
+
+1. A client calls the **API** over HTTP.
+2. Authorization is enforced using the system’s auth model (see Shield responsibilities).
+3. The API persists domain state (e.g., document/workspace changes).
+4. The API publishes a cross-service event to **Redis Streams** when the change matters outside the service boundary.
+
+### 2) Real-time collaboration (WebSocket)
+
+Typical workflow:
+
+1. Clients connect to **Relay** via WebSocket.
+2. Concurrent edits are coordinated using an **operational transform** approach.
+3. Presence (cursor/selection) updates are streamed to connected clients.
+4. Collaboration actions that must be reflected system-wide are published as events.
+
+### 3) Event-driven synchronization
+
+Events are the primary mechanism for keeping services in sync without tight coupling.
+
+-   Transport: Redis Streams
+-   Schemas: Protocol Buffers (polyglot-safe)
+
+## Canonical specifications
+
+### OpenAPI
+
+The API reference for REST is generated from the OpenAPI spec published into this docs site:
+
+-   `/openapi/openapi.json`
+
+### Event schemas (protobuf)
+
+<EventProtoSummary />

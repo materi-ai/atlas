@@ -1,0 +1,224 @@
+---
+title: "MFLOW Architecture Guide"
+description: "Complete architectural overview of the Materi MFLOW ecosystem - Shield-to-Worker event-driven communication patterns"
+version: "1.0.0"
+lastUpdated: "2025-12-19"
+tags: ["architecture", "mflow", "events", "services"]
+---
+
+# MFLOW Architecture Guide
+
+The MFLOW (Materi Flow) ecosystem is the event-driven backbone of the Materi platform, enabling real-time collaboration, distributed processing, and cross-service synchronization.
+
+## Overview
+
+MFLOW connects seven core services through Redis Streams, providing:
+- **At-least-once delivery** with idempotent handlers
+- **Causal ordering** via Hybrid Logical Clocks (HLC)
+- **Horizontal scaling** through consumer groups
+- **Full observability** via FOLIO/STORM integration
+
+```
+┌─────────────────────────────────────────────────────────────────────────┐
+│                          MFLOW Architecture                              │
+├─────────────────────────────────────────────────────────────────────────┤
+│                                                                         │
+│   ┌─────────┐    ┌─────────┐    ┌─────────┐    ┌─────────┐             │
+│   │   API   │    │ Shield  │    │  Relay  │    │  Aria   │             │
+│   │  (Go)   │    │(Django) │    │ (Rust)  │    │(Python) │             │
+│   └────┬────┘    └────┬────┘    └────┬────┘    └────┬────┘             │
+│        │              │              │              │                   │
+│        ▼              ▼              ▼              ▼                   │
+│   ┌─────────────────────────────────────────────────────────────┐       │
+│   │                    Redis Streams (RIFT)                      │       │
+│   │  ┌───────────────┐ ┌───────────────┐ ┌───────────────┐      │       │
+│   │  │ events:user   │ │events:document│ │events:collab  │      │       │
+│   │  └───────────────┘ └───────────────┘ └───────────────┘      │       │
+│   │  ┌───────────────┐ ┌───────────────┐ ┌───────────────┐      │       │
+│   │  │events:workspace│ │ events:aria  │ │ events:audit  │      │       │
+│   │  └───────────────┘ └───────────────┘ └───────────────┘      │       │
+│   └─────────────────────────────────────────────────────────────┘       │
+│        │              │              │              │                   │
+│        ▼              ▼              ▼              ▼                   │
+│   ┌─────────┐    ┌─────────┐    ┌─────────┐    ┌─────────┐             │
+│   │ Folio   │    │Printery │    │  Arena  │    │Notifier │             │
+│   │(Monitor)│    │ (Obs)   │    │ (Audit) │    │ (Push)  │             │
+│   └─────────┘    └─────────┘    └─────────┘    └─────────┘             │
+│                                                                         │
+└─────────────────────────────────────────────────────────────────────────┘
+```
+
+## Core Services
+
+### 1. API Service (Go/Fiber)
+**Primary HTTP API for document management and orchestration**
+
+- Entry point: `domain/api/cmd/api/main.go`
+- Port: 8080
+- Responsibilities:
+  - Document CRUD operations
+  - File upload/download (B2/S3)
+  - AI integration orchestration
+  - Event publishing to Redis Streams
+
+```go
+// Event publishing pattern
+event := events.NewDocumentCreatedEvent(documentID, userID, workspaceID)
+eventBus.Publish(ctx, "materi:events:documents", event)
+```
+
+### 2. Shield Service (Python/Django)
+**Centralized authentication and authorization**
+
+- Entry point: `domain/shield/manage.py`
+- Port: 8000
+- Responsibilities:
+  - OAuth 2.0/SAML authentication
+  - JWT token management
+  - User lifecycle management
+  - GDPR compliance
+
+### 3. Relay Service (Rust/Axum)
+**Real-time collaboration engine**
+
+- Entry point: `domain/relay/src/main.rs`
+- Port: 8081 (WebSocket + HTTP)
+- Responsibilities:
+  - Operational Transform (OT)
+  - Vector clock conflict resolution
+  - Presence management
+  - Real-time sync
+
+### 4. Folio Service (Go)
+**Observability aggregation and federation**
+
+- Location: `operations/folio/`
+- Port: 3000 (HTTP), 9090 (Metrics)
+- Responsibilities:
+  - Metrics aggregation
+  - STORM federation
+  - Alert management
+  - Dashboard provisioning
+
+### 5. Printery Service
+**Event processing and observability publishing**
+
+- Consumes all 7 event streams
+- Publishes metrics to Prometheus
+- Correlates traces via Jaeger
+
+### 6. Aria Service (Python)
+**AI enhancement and content intelligence**
+
+- Port: 8083
+- Integrations: OpenAI, Claude
+- AI-powered document analysis
+
+### 7. Arena Service
+**Audit and compliance tracking**
+
+- Immutable audit trail
+- GDPR request processing
+- Compliance reporting
+
+## Event Streams (RIFT Pattern)
+
+All services communicate via Redis Streams:
+
+| Stream | Events | Retention | Scale |
+|--------|--------|-----------|-------|
+| `materi:events:user` | 12 types | 30 days | 100-150/sec |
+| `materi:events:document` | 6 types | 30 days | 500-1000/sec |
+| `materi:events:collaboration` | 5 types | 7 days | 2000-5000/sec |
+| `materi:events:workspace` | 5 types | 30 days | Common |
+| `materi:events:aria` | 5 types | 30 days | 100-200/sec |
+| `materi:events:notification` | 4 types | 7 days | 200-500/sec |
+| `materi:events:audit` | 3 types | 365 days | 50-150/sec |
+
+## DomainEvent Envelope (FORGE)
+
+Every event is wrapped in a universal envelope:
+
+```protobuf
+message DomainEvent {
+  // Identity
+  string event_id = 1;
+  string event_type = 2;
+  string aggregate_id = 3;
+  string aggregate_type = 4;
+  int64 version = 5;
+
+  // Payload
+  bytes payload = 6;
+  google.protobuf.Struct metadata = 7;
+
+  // Timestamps
+  google.protobuf.Timestamp occurred_at = 8;
+  google.protobuf.Timestamp published_at = 9;
+
+  // Source
+  string source_service = 10;
+  string user_id = 11;
+
+  // Distributed Tracing
+  string correlation_id = 12;
+  string trace_id = 13;
+  string span_id = 14;
+  string parent_span_id = 15;
+
+  // Hybrid Logical Clock
+  int64 hlc_timestamp = 16;
+  int32 hlc_counter = 17;
+}
+```
+
+## Service Communication Patterns
+
+### 1. HTTP REST (Client → Services)
+```
+Client → API Gateway → API/Shield/Folio
+```
+
+### 2. WebSocket (Real-time)
+```
+Client ↔ Relay (bidirectional)
+```
+
+### 3. Redis Streams (Async Events)
+```
+Service A → Redis Stream → Service B (consumer group)
+```
+
+### 4. Internal HTTP (Service-to-Service)
+```
+API → Shield (token validation)
+Relay → API (document sync)
+```
+
+## Hybrid Logical Clock (HLC)
+
+MFLOW uses HLC for causal ordering:
+
+- **Total Ordering**: Strictly increasing `(hlc_timestamp, hlc_counter)` tuples
+- **Causality**: If Event A→B, then HLC(A) < HLC(B)
+- **Clock Skew Tolerance**: Logical increment when wall clock goes backwards
+- **Deterministic Replay**: Replay system state to any point in time
+
+## Environment Configuration
+
+Services discover each other via environment variables:
+
+```bash
+# Inter-service URLs (Railway internal network)
+API_SERVICE_URL=http://api.railway.internal:8080
+SHIELD_SERVICE_URL=http://shield.railway.internal:8000
+RELAY_SERVICE_URL=http://relay.railway.internal:8081
+FOLIO_SERVICE_URL=http://folio.railway.internal:3000
+```
+
+## Next Steps
+
+- [MFLOW Environment Setup](/docs/mflow/02-environment-setup-railway.mdx)
+- [FOLIO Observability Guide](/docs/mflow/03-folio-observability-guide.mdx)
+- [FORGE Event Schema Reference](/docs/mflow/04-forge-event-schema-reference.mdx)
+- [Development Workflow](/docs/mflow/05-development-workflow-resources.mdx)

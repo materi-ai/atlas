@@ -1,0 +1,147 @@
+---
+title: 'Documentation Contract'
+description: 'Quality bar, structure, and source-of-truth rules for Materi docs'
+---
+
+This document defines the _minimum standard_ for documentation in this repository.
+It is intentionally operational: it prioritizes clarity, correctness, and maintainability over prose.
+
+## Goals
+
+-   Make docs **verifiable** (reviewers can confirm correctness from sources).
+-   Keep docs **modular** (avoid duplication; prefer shared snippets and canonical references).
+-   Prevent **drift** between docs and the system (generated/reference-first for specs).
+-   Scale across **multiple services and repositories** with predictable structure.
+
+## Scope and audiences
+
+This repo contains multiple audiences. When writing or reviewing, be explicit about which audience a page serves.
+
+-   **Customer**: product usage and workflows (non-technical or lightly technical)
+-   **Developer**: integration, API usage, SDKs, service architecture
+-   **Enterprise**: deployment, compliance/security posture, operations at scale
+-   **Internal**: engineering/operations runbooks, ADRs, deep design specs
+
+A page should not try to serve two audiences unless it clearly separates sections.
+
+## Document types and required sections
+
+Use the simplest doc type that fits the intent.
+
+### Overview ("what is this?")
+
+Required:
+
+-   **Purpose** (what it is)
+-   **Who it’s for**
+-   **How it fits** (links to related concepts/guides/reference)
+
+### Concept ("how does it work?")
+
+Required:
+
+-   **Problem / motivation**
+-   **Core model** (entities, invariants, state machine if applicable)
+-   **Failure modes** (what can go wrong; guarantees and non-guarantees)
+-   **Related references** (schemas, endpoints, events)
+
+### Guide ("how do I do X?")
+
+Required:
+
+-   **Prerequisites**
+-   **Steps** (ordered, copy/paste friendly)
+-   **Expected outcomes** (what success looks like)
+-   **Troubleshooting** (common errors and fixes)
+
+### Reference ("exactly what is supported?")
+
+Required:
+
+-   **Canonical source link** (OpenAPI, proto, event schema, config)
+-   **Versioning policy** (or link to it)
+
+Rule: if the content is already expressed in a machine-readable spec, **do not re-type it**.
+Instead, render it (generated) or link to it.
+
+### Runbook / Operations
+
+Required:
+
+-   **Signals** (metrics/logs/traces, dashboards)
+-   **Playbooks** (diagnosis → mitigation)
+-   **Rollback / recovery**
+-   **Escalation** (owners/contacts)
+
+### ADR (Architecture Decision Record)
+
+Required:
+
+-   **Context**
+-   **Decision**
+-   **Consequences**
+-   **Alternatives considered**
+
+## Stub policy (definition + allowed markers)
+
+A “stub” is any page that reads like a placeholder rather than usable documentation.
+
+A page is considered a stub if **any** of the following are true:
+
+-   It includes obvious placeholder language such as: `Stub`, `TODO`, `TBD`, `Placeholder`.
+-   It has headings without meaningful content under them.
+-   It does not meet the required sections for its doc type.
+-   It cannot be validated against a source of truth (links/specs/code) when it claims behavior.
+
+Allowed markers:
+
+-   `DRAFT:` in the first paragraph is allowed _only if_ the page is still useful.
+-   `<!-- STUB -->` is allowed for intentionally parked pages (should be rare and tracked).
+
+## Source-of-truth hierarchy (cross-repo scalable)
+
+When information exists in a canonical system, docs should **derive from it** rather than duplicating it.
+
+Preferred order:
+
+1. **Machine-readable specs**: OpenAPI, protobuf, event schema definitions
+2. **Executable examples**: SDK samples, integration tests, reference clients
+3. **Operational reality**: runbooks + dashboards + incident learnings
+4. **Narrative**: concepts, overviews, guides
+
+Practical rules:
+
+-   Endpoint shapes, request/response bodies, status codes: **OpenAPI**.
+-   Event names/payloads/versions: **event schema source** (and generation where feasible).
+-   Wire formats and shared domain objects: **protobuf**.
+-   Timeouts, limits, retries, idempotency: **code + config**, summarized with links.
+
+If you must duplicate facts (e.g., to explain intent), keep it _high level_ and link to the canonical spec.
+
+## Writing standards
+
+-   Prefer **precise language** over marketing language.
+-   State **guarantees** and **non-guarantees** explicitly.
+-   Include **version context** when behavior is not timeless.
+-   Avoid copying the same instructions into multiple pages; use snippets or link to the canonical page.
+
+## Verification standards (implemented as gates in CI)
+
+These are the checks the docs system should be able to enforce:
+
+-   **No-stub gate**: blocks known stub markers and missing required sections.
+-   **Broken link gate**: `mint broken-links` clean.
+-   **Reference drift gate**: generated reference output matches committed specs.
+-   **Build gate**: docs preview/build succeeds.
+
+(Automation is added later; this contract defines what automation must enforce.)
+
+## Change management
+
+Documentation updates should ship with the change that requires them:
+
+-   New endpoints/events/config knobs → update the canonical spec and regenerate reference pages.
+-   Behavioral changes → update the concept/guide page and link the PR.
+-   Incidents → update runbooks with the learning.
+
+If a PR changes runtime behavior and does not update docs (or explicitly justify why not), it is incomplete.

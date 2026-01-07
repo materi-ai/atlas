@@ -1,0 +1,626 @@
+---
+title: "FORGE Event Schema Reference"
+description: "Complete reference for ManuScript (MSX) event schemas, FORGE compilation, and RIFT event patterns"
+version: "1.0.0"
+lastUpdated: "2025-12-19"
+tags: ["forge", "events", "protobuf", "rift", "manuscript"]
+---
+
+# FORGE Event Schema Reference
+
+FORGE is the unified event schema compilation system that powers MFLOW. It compiles Protocol Buffer definitions into type-safe bindings used across all services.
+
+## Overview
+
+```
+┌─────────────────────────────────────────────────────────────────────────┐
+│                        FORGE Compilation Pipeline                        │
+├─────────────────────────────────────────────────────────────────────────┤
+│                                                                         │
+│   Source (Proto)              Compiler              Output (Go)         │
+│   ┌─────────────┐            ┌─────────┐           ┌─────────────┐      │
+│   │ .msx/domains│  ────────► │ protoc  │ ────────► │ pkg/proto/  │      │
+│   │ ├─user/     │            │ +plugins│           │ ├─user/     │      │
+│   │ ├─document/ │            └─────────┘           │ ├─document/ │      │
+│   │ ├─collab/   │                                  │ ├─collab/   │      │
+│   │ └─...       │                                  │ └─...       │      │
+│   └─────────────┘                                  └─────────────┘      │
+│                                                          │              │
+│                                                          ▼              │
+│   Distribution via go.mod ────────────────────────────────────────►     │
+│                                                                         │
+│   ┌─────────┐  ┌─────────┐  ┌─────────┐  ┌─────────┐  ┌─────────┐      │
+│   │   API   │  │ Shield  │  │  Relay  │  │  Folio  │  │Printery │      │
+│   └─────────┘  └─────────┘  └─────────┘  └─────────┘  └─────────┘      │
+│                                                                         │
+└─────────────────────────────────────────────────────────────────────────┘
+```
+
+## Proto File Locations
+
+```
+domain/manuscript/.msx/
+├── domains/
+│   ├── envelope/v1.proto    # Universal event envelope
+│   ├── user/v1.proto        # User lifecycle events
+│   ├── document/v1.proto    # Document CRUD events
+│   ├── collaboration/v1.proto # Real-time collab events
+│   ├── workspace/v1.proto   # Workspace management
+│   ├── aria/v1.proto        # AI enhancement events
+│   ├── notification/v1.proto # Notification events
+│   └── audit/v1.proto       # Audit trail events
+├── shared/v1.proto          # Shared types and options
+└── Makefile                 # Compilation targets
+```
+
+## DomainEvent Envelope
+
+Every event in MFLOW is wrapped in a universal envelope:
+
+```protobuf
+// domain/manuscript/.msx/domains/envelope/v1.proto
+
+syntax = "proto3";
+package materi.events.v1;
+
+import "google/protobuf/timestamp.proto";
+import "google/protobuf/struct.proto";
+
+message DomainEvent {
+  // === Identity ===
+  string event_id = 1;           // UUID, unique across system
+  string event_type = 2;         // e.g., "user.created"
+  string aggregate_id = 3;       // ID of the entity
+  string aggregate_type = 4;     // e.g., "user", "document"
+  int64 version = 5;             // Aggregate version for optimistic locking
+
+  // === Payload ===
+  bytes payload = 6;                        // JSON-encoded event data
+  google.protobuf.Struct metadata = 7;      // Untyped metadata
+
+  // === Timestamps ===
+  google.protobuf.Timestamp occurred_at = 8;   // When event occurred
+  google.protobuf.Timestamp published_at = 9;  // When published to stream
+
+  // === Source ===
+  string source_service = 10;    // Publishing service name
+  string user_id = 11;           // User who triggered event
+
+  // === Distributed Tracing ===
+  string correlation_id = 12;    // Request correlation
+  string trace_id = 13;          // OpenTelemetry trace
+  string span_id = 14;           // Current span
+  string parent_span_id = 15;    // Parent span
+
+  // === Hybrid Logical Clock ===
+  int64 hlc_timestamp = 16;      // Logical timestamp
+  int32 hlc_counter = 17;        // Tie-breaker counter
+}
+```
+
+## Event Domains
+
+### 1. User Events
+
+**Stream:** `materi:events:user`
+**Consumers:** Shield, API, Aria, Folio
+**Retention:** 30 days
+**Rate:** 100-150 events/sec
+
+```protobuf
+// domain/manuscript/.msx/domains/user/v1.proto
+
+message UserCreatedEvent {
+  string user_id = 1;
+  string email = 2;
+  string display_name = 3;
+  string auth_provider = 4;     // oauth/email
+  repeated string roles = 5;
+  google.protobuf.Timestamp created_at = 6;
+}
+
+message UserUpdatedEvent {
+  string user_id = 1;
+  map<string, string> changed_fields = 2;
+  google.protobuf.Timestamp updated_at = 3;
+}
+
+message UserDeletedEvent {
+  string user_id = 1;
+  string deletion_reason = 2;    // gdpr_request/user_request/admin
+  bool hard_delete = 3;
+  google.protobuf.Timestamp deleted_at = 4;
+}
+
+message UserRoleChangedEvent {
+  string user_id = 1;
+  repeated string previous_roles = 2;
+  repeated string new_roles = 3;
+  string changed_by = 4;
+}
+
+message UserSessionCreatedEvent {
+  string user_id = 1;
+  string session_id = 2;
+  string device_info = 3;
+  string ip_address = 4;
+}
+
+message UserSessionInvalidatedEvent {
+  string user_id = 1;
+  string session_id = 2;
+  string reason = 3;             // logout/timeout/security
+}
+```
+
+### 2. Document Events
+
+**Stream:** `materi:events:document`
+**Consumers:** API, Relay, Aria, Folio, Arena
+**Retention:** 30 days
+**Rate:** 500-1000 events/sec
+
+```protobuf
+// domain/manuscript/.msx/domains/document/v1.proto
+
+message DocumentCreatedEvent {
+  string document_id = 1;
+  string workspace_id = 2;
+  string owner_id = 3;
+  string title = 4;
+  string content_type = 5;       // markdown/rich_text/code
+  int64 size_bytes = 6;
+}
+
+message DocumentUpdatedEvent {
+  string document_id = 1;
+  string updated_by = 2;
+  repeated string changed_fields = 3;
+  int64 new_version = 4;
+}
+
+message DocumentDeletedEvent {
+  string document_id = 1;
+  string deleted_by = 2;
+  bool permanent = 3;
+}
+
+message DocumentSharedEvent {
+  string document_id = 1;
+  string shared_with = 2;        // user_id or team_id
+  string permission_level = 3;   // read/write/admin
+  string shared_by = 4;
+}
+
+message DocumentPublishedEvent {
+  string document_id = 1;
+  string published_url = 2;
+  string visibility = 3;         // public/unlisted/private
+}
+
+message DocumentArchivedEvent {
+  string document_id = 1;
+  string archived_by = 2;
+  string reason = 3;
+}
+```
+
+### 3. Collaboration Events
+
+**Stream:** `materi:events:collaboration`
+**Consumers:** Relay, API, Folio, Arena
+**Retention:** 7 days
+**Rate:** 2000-5000 events/sec
+
+```protobuf
+// domain/manuscript/.msx/domains/collaboration/v1.proto
+
+message CollaborationStartedEvent {
+  string session_id = 1;
+  string document_id = 2;
+  repeated string participant_ids = 3;
+}
+
+message CollaborationEndedEvent {
+  string session_id = 1;
+  string document_id = 2;
+  int32 total_operations = 3;
+  google.protobuf.Duration duration = 4;
+}
+
+message OperationAppliedEvent {
+  string session_id = 1;
+  string document_id = 2;
+  string user_id = 3;
+  bytes operation = 4;           // OT operation
+  int64 version = 5;
+  HybridLogicalClock hlc = 6;
+}
+
+message ConflictResolvedEvent {
+  string session_id = 1;
+  string document_id = 2;
+  repeated bytes conflicting_ops = 3;
+  bytes resolved_op = 4;
+  string resolution_strategy = 5;
+}
+
+message PresenceUpdatedEvent {
+  string document_id = 1;
+  string user_id = 2;
+  CursorPosition cursor = 3;
+  SelectionRange selection = 4;
+  bool is_active = 5;
+}
+
+message HybridLogicalClock {
+  int64 timestamp = 1;
+  int32 counter = 2;
+  string node_id = 3;
+}
+
+message CursorPosition {
+  int32 line = 1;
+  int32 column = 2;
+}
+
+message SelectionRange {
+  CursorPosition start = 1;
+  CursorPosition end = 2;
+}
+```
+
+### 4. Workspace Events
+
+**Stream:** `materi:events:workspace`
+**Consumers:** API, Shield, Folio
+**Retention:** 30 days
+
+```protobuf
+// domain/manuscript/.msx/domains/workspace/v1.proto
+
+message WorkspaceCreatedEvent {
+  string workspace_id = 1;
+  string name = 2;
+  string owner_id = 3;
+  string plan_tier = 4;          // free/pro/enterprise
+}
+
+message WorkspaceMemberAddedEvent {
+  string workspace_id = 1;
+  string user_id = 2;
+  string role = 3;               // owner/admin/member/guest
+  string invited_by = 4;
+}
+
+message WorkspaceMemberRemovedEvent {
+  string workspace_id = 1;
+  string user_id = 2;
+  string removed_by = 3;
+  string reason = 4;
+}
+
+message WorkspaceSettingsUpdatedEvent {
+  string workspace_id = 1;
+  map<string, string> changed_settings = 2;
+  string updated_by = 3;
+}
+
+message WorkspaceDeletedEvent {
+  string workspace_id = 1;
+  string deleted_by = 2;
+  bool cascade_documents = 3;
+}
+```
+
+### 5. Aria (AI) Events
+
+**Stream:** `materi:events:aria`
+**Consumers:** Aria, API, Folio
+**Retention:** 30 days
+**Rate:** 100-200 events/sec
+
+```protobuf
+// domain/manuscript/.msx/domains/aria/v1.proto
+
+message AIAnalysisRequestedEvent {
+  string request_id = 1;
+  string document_id = 2;
+  string analysis_type = 3;      // summary/sentiment/extraction
+  string requested_by = 4;
+}
+
+message AIAnalysisCompletedEvent {
+  string request_id = 1;
+  string document_id = 2;
+  bytes result = 3;
+  int32 tokens_used = 4;
+  google.protobuf.Duration processing_time = 5;
+}
+
+message AIAnalysisFailedEvent {
+  string request_id = 1;
+  string document_id = 2;
+  string error_code = 3;
+  string error_message = 4;
+}
+
+message AISuggestionGeneratedEvent {
+  string suggestion_id = 1;
+  string document_id = 2;
+  string suggestion_type = 3;    // completion/correction/improvement
+  string content = 4;
+}
+
+message AISuggestionAcceptedEvent {
+  string suggestion_id = 1;
+  string document_id = 2;
+  string accepted_by = 3;
+  bool modified = 4;
+}
+```
+
+### 6. Notification Events
+
+**Stream:** `materi:events:notification`
+**Consumers:** Shield, API, Folio
+**Retention:** 7 days
+**Rate:** 200-500 events/sec
+
+```protobuf
+// domain/manuscript/.msx/domains/notification/v1.proto
+
+message NotificationCreatedEvent {
+  string notification_id = 1;
+  string user_id = 2;
+  string type = 3;               // mention/share/comment/system
+  string title = 4;
+  string body = 5;
+  map<string, string> data = 6;
+}
+
+message NotificationDeliveredEvent {
+  string notification_id = 1;
+  string channel = 2;            // in_app/email/push
+  google.protobuf.Timestamp delivered_at = 3;
+}
+
+message NotificationReadEvent {
+  string notification_id = 1;
+  string user_id = 2;
+}
+
+message NotificationSettingsUpdatedEvent {
+  string user_id = 1;
+  map<string, bool> channel_preferences = 2;
+}
+```
+
+### 7. Audit Events
+
+**Stream:** `materi:events:audit`
+**Consumers:** Arena, Shield, Folio
+**Retention:** 365 days
+**Rate:** 50-150 events/sec
+
+```protobuf
+// domain/manuscript/.msx/domains/audit/v1.proto
+
+message AuditLogCreatedEvent {
+  string audit_id = 1;
+  string actor_id = 2;
+  string action = 3;             // create/read/update/delete/export
+  string resource_type = 4;      // document/user/workspace
+  string resource_id = 5;
+  map<string, string> context = 6;
+  string ip_address = 7;
+  string user_agent = 8;
+}
+
+message GDPRRequestCreatedEvent {
+  string request_id = 1;
+  string user_id = 2;
+  string request_type = 3;       // access/erasure/portability/rectification
+  google.protobuf.Timestamp deadline = 4;
+}
+
+message GDPRRequestCompletedEvent {
+  string request_id = 1;
+  string user_id = 2;
+  string status = 3;             // completed/partial/denied
+  bytes data_package = 4;        // For access/portability
+}
+```
+
+## Compilation Commands
+
+```bash
+# Compile all protos to Go
+cd domain/manuscript
+make compile-protos
+
+# Or directly
+cd domain/manuscript/.msx
+make compile
+
+# Watch for changes
+make watch
+
+# Generate descriptor set
+make descriptor
+
+# Verify compilation
+make verify
+```
+
+## Using Generated Types
+
+### Go (API/Folio)
+
+```go
+import (
+    userpb "github.com/materi-ai/manuscript/pkg/proto/materi/v1/user"
+    "github.com/materi-ai/manuscript/pkg/proto/materi/v1/envelope"
+)
+
+// Create event
+event := &userpb.UserCreatedEvent{
+    UserId:      uuid.New().String(),
+    Email:       "user@example.com",
+    DisplayName: "John Doe",
+    AuthProvider: "oauth",
+    Roles:       []string{"member"},
+    CreatedAt:   timestamppb.Now(),
+}
+
+// Wrap in envelope
+envelope := &envelope.DomainEvent{
+    EventId:       uuid.New().String(),
+    EventType:     "user.created",
+    AggregateId:   event.UserId,
+    AggregateType: "user",
+    Payload:       marshalJSON(event),
+    OccurredAt:    timestamppb.Now(),
+    SourceService: "shield",
+}
+
+// Publish
+eventBus.Publish(ctx, "materi:events:user", envelope)
+```
+
+### Python (Shield)
+
+```python
+from materi.events.v1 import user_pb2, envelope_pb2
+from google.protobuf.timestamp_pb2 import Timestamp
+
+# Create event
+event = user_pb2.UserCreatedEvent(
+    user_id=str(uuid.uuid4()),
+    email="user@example.com",
+    display_name="John Doe",
+    auth_provider="oauth",
+    roles=["member"],
+)
+event.created_at.CopyFrom(Timestamp())
+
+# Publish via event bus
+event_bus.publish("materi:events:user", event)
+```
+
+### Rust (Relay)
+
+```rust
+use materi_proto::events::v1::{UserCreatedEvent, DomainEvent};
+
+let event = UserCreatedEvent {
+    user_id: uuid::Uuid::new_v4().to_string(),
+    email: "user@example.com".into(),
+    display_name: "John Doe".into(),
+    auth_provider: "oauth".into(),
+    roles: vec!["member".into()],
+    ..Default::default()
+};
+
+// Publish
+event_bus.publish("materi:events:user", &event).await?;
+```
+
+## Event Metadata Options
+
+Events can be annotated with metadata for runtime introspection:
+
+```protobuf
+// domain/manuscript/.msx/shared/v1.proto
+
+extend google.protobuf.MessageOptions {
+  EventMetadata event_metadata = 50001;
+}
+
+message EventMetadata {
+  string event_type = 1;
+  string aggregate_type = 2;
+  string stream_name = 3;
+  repeated string consumers = 4;
+  int32 retention_days = 5;
+  string ordering_guarantee = 6;   // causal/total
+  bool auditable = 7;
+  bool replayable = 8;
+  string frequency = 9;            // common/high/very_high
+}
+```
+
+**Usage:**
+```protobuf
+message UserCreatedEvent {
+  option (event_metadata) = {
+    event_type: "user.created"
+    aggregate_type: "user"
+    stream_name: "materi:events:user"
+    consumers: ["shield", "api", "aria", "folio"]
+    retention_days: 30
+    ordering_guarantee: "causal"
+    auditable: true
+    replayable: true
+    frequency: "common"
+  };
+
+  // fields...
+}
+```
+
+## RIFT Event Consumption
+
+### Consumer Group Pattern
+
+```go
+// Create consumer group
+redis.XGroupCreate(ctx, "materi:events:user", "api-consumers", "0")
+
+// Read events
+streams, _ := redis.XReadGroup(ctx, &redis.XReadGroupArgs{
+    Group:    "api-consumers",
+    Consumer: "api-worker-1",
+    Streams:  []string{"materi:events:user", ">"},
+    Count:    100,
+    Block:    5000,
+})
+
+// Process and acknowledge
+for _, stream := range streams {
+    for _, message := range stream.Messages {
+        if err := processEvent(message); err == nil {
+            redis.XAck(ctx, stream.Stream, "api-consumers", message.ID)
+        }
+    }
+}
+```
+
+### Idempotency
+
+All event handlers must be idempotent:
+
+```go
+func handleUserCreated(ctx context.Context, event *UserCreatedEvent) error {
+    // Check if already processed
+    processed, _ := redis.SIsMember(ctx, "processed:user.created", event.UserId).Result()
+    if processed {
+        return nil // Already handled
+    }
+
+    // Process event
+    if err := createUserProfile(ctx, event); err != nil {
+        return err
+    }
+
+    // Mark as processed
+    redis.SAdd(ctx, "processed:user.created", event.UserId)
+    redis.Expire(ctx, "processed:user.created", 24*time.Hour)
+
+    return nil
+}
+```
+
+## Next Steps
+
+- [Development Workflow](/docs/mflow/05-development-workflow-resources.mdx)

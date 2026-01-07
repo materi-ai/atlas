@@ -1,0 +1,34 @@
+---
+name: 'Send signed webhook (bash + python)'
+description: 'Generate X-Hub-Signature-256 and POST JSON to a webhook endpoint'
+---
+
+This sends a JSON payload with a GitHub-style HMAC signature header.
+
+```bash
+export WEBHOOK_BASE_URL="http://localhost:8000"
+export GITHUB_WEBHOOK_SECRET="REPLACE_ME"
+
+payload='{"service":"manuscript","pipeline":"msx-ci","run_id":"123","status":"success"}'
+
+sig=$(python3 - <<'PY'
+import hashlib, hmac, os
+payload = os.environ["PAYLOAD"].encode("utf-8")
+secret = os.environ["GITHUB_WEBHOOK_SECRET"].encode("utf-8")
+print("sha256=" + hmac.new(secret, payload, hashlib.sha256).hexdigest())
+PY
+)
+
+curl -sS "$WEBHOOK_BASE_URL/api/v1/webhooks/pipeline-metrics/" \
+  -H "Content-Type: application/json" \
+  -H "X-GitHub-Event: pipeline_metrics" \
+  -H "X-GitHub-Delivery: 123" \
+  -H "X-Hub-Signature-256: $sig" \
+  -d "$payload"
+```
+
+To reuse this snippet, set:
+
+-   `WEBHOOK_BASE_URL`
+-   `GITHUB_WEBHOOK_SECRET`
+-   `payload` (and optionally `X-GitHub-Delivery`)

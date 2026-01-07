@@ -1,0 +1,14 @@
+{
+    "name": "@docs/materi",
+    "version": "0.0.0",
+    "private": true,
+    "scripts": {
+        "dev": "npx -y mintlify@4.2.259 dev",
+        "audit:docs": "python3 scripts/docs_audit.py",
+        "check:docs": "python3 scripts/docs_audit.py --check",
+        "check:links": "python3 scripts/check_links.py",
+        "sync:reference": "python3 scripts/sync_reference.py",
+        "check:reference": "python3 scripts/sync_reference.py --check",
+        "check:all": "npm run check:reference && npm run check:docs && npm run check:links"
+    }
+}

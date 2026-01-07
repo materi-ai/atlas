@@ -1,0 +1,337 @@
+---
+title: "MFLOW Environment Setup Guide"
+description: "Complete guide for setting up MFLOW environments on Railway, OrbStack, and GCloud"
+version: "1.0.0"
+lastUpdated: "2025-12-19"
+tags: ["setup", "railway", "orbstack", "gcloud", "deployment"]
+---
+
+# MFLOW Environment Setup Guide
+
+This guide covers setting up the complete MFLOW ecosystem across development, staging, testing, and production environments.
+
+## Environment Files Location
+
+All environment templates are located in:
+```
+operations/env/
+├── .env.development   # Local dev with Docker/OrbStack
+├── .env.staging       # Railway staging environment
+├── .env.testing       # CI/CD and test runners
+└── .env.production    # Production deployment
+```
+
+## Quick Start
+
+### Local Development (OrbStack/Docker)
+
+1. **Copy development template:**
+```bash
+cp operations/env/.env.development .env
+```
+
+2. **Generate secrets:**
+```bash
+# Generate SECRET_KEY
+openssl rand -hex 64
+
+# Generate JWT secrets
+openssl rand -hex 64  # JWT_SECRET
+openssl rand -hex 64  # JWT_SECRET_KEY
+openssl rand -hex 64  # JWT_REFRESH_SECRET_KEY
+
+# Generate encryption key (32 bytes)
+openssl rand -base64 32
+```
+
+3. **Start infrastructure:**
+```bash
+make start  # Starts postgres, redis, and core services
+```
+
+4. **Verify health:**
+```bash
+curl http://localhost:8080/health  # API
+curl http://localhost:8000/health  # Shield
+curl http://localhost:8081/health  # Relay
+```
+
+## Railway Deployment
+
+### Initial Setup
+
+1. **Install Railway CLI:**
+```bash
+brew install railway  # macOS
+# or
+npm install -g @railway/cli
+```
+
+2. **Login and link project:**
+```bash
+railway login
+railway link
+```
+
+3. **Create services:**
+```bash
+# Create each service in Railway dashboard or via CLI
+railway add --service api
+railway add --service shield
+railway add --service relay
+railway add --service folio
+railway add --service postgres
+railway add --service redis
+```
+
+### Configure Shared Variables
+
+Set these variables in Railway's **Shared Variables** (accessible to all services):
+
+```bash
+# Database
+RAILWAY_POSTGRES_PASSWORD=<generated>
+DATABASE_URL=postgresql://postgres:${RAILWAY_POSTGRES_PASSWORD}@postgres.railway.internal:5432/railway
+
+# Redis
+RAILWAY_REDIS_PASSWORD=<generated>
+REDIS_URL=redis://:${RAILWAY_REDIS_PASSWORD}@redis.railway.internal:6379/0
+
+# Secrets (generate with openssl rand -hex 64)
+RAILWAY_SECRET_KEY=<64-char-hex>
+RAILWAY_JWT_SECRET=<64-char-hex>
+RAILWAY_JWT_SECRET_KEY=<64-char-hex>
+RAILWAY_JWT_REFRESH_SECRET_KEY=<64-char-hex>
+RAILWAY_ENCRYPTION_KEY=<32-bytes-base64>
+RAILWAY_INTERNAL_API_SECRET=<generated>
+
+# Storage
+RAILWAY_B2_APPLICATION_KEY_ID=<from-b2-dashboard>
+RAILWAY_B2_APPLICATION_KEY=<from-b2-dashboard>
+
+# Observability
+RAILWAY_SENTRY_DSN=<from-sentry>
+RAILWAY_BETTERSTACK_SOURCE_TOKEN=<from-betterstack>
+RAILWAY_STORM_API_KEY=<from-sparki>
+```
+
+### Service-Specific Variables
+
+**API Service:**
+```bash
+ENVIRONMENT=staging
+PORT=8080
+LOG_LEVEL=info
+ENABLE_METRICS=true
+```
+
+**Shield Service:**
+```bash
+ENVIRONMENT=staging
+PORT=8000
+DEBUG=false
+ALLOWED_HOSTS=*.railway.app,healthcheck.railway.app
+CELERY_TASK_ALWAYS_EAGER=false
+```
+
+**Relay Service:**
+```bash
+RUST_ENV=staging
+COLLAB_PORT=8081
+RUST_LOG=info,tower_http=info
+WS_MAX_CONNECTIONS=5000
+```
+
+### Deploy to Railway
+
+```bash
+# Deploy all services
+railway up
+
+# Deploy specific service
+railway up --service api
+
+# Check deployment status
+railway status
+
+# View logs
+railway logs --service api
+```
+
+## GCloud Deployment
+
+### Prerequisites
+
+```bash
+# Install gcloud CLI
+brew install google-cloud-sdk
+
+# Authenticate
+gcloud auth login
+gcloud config set project materi-production
+```
+
+### Secret Manager Setup
+
+```bash
+# Create secrets
+gcloud secrets create materi-secret-key --data-file=-
+gcloud secrets create materi-jwt-secret --data-file=-
+gcloud secrets create materi-db-password --data-file=-
+
+# Grant access to Cloud Run
+gcloud secrets add-iam-policy-binding materi-secret-key \
+  --member="serviceAccount:materi-api@materi-production.iam.gserviceaccount.com" \
+  --role="roles/secretmanager.secretAccessor"
+```
+
+### Cloud Run Deployment
+
+```bash
+# Build and push image
+docker build -t gcr.io/materi-production/api:latest ./domain/api
+docker push gcr.io/materi-production/api:latest
+
+# Deploy to Cloud Run
+gcloud run deploy api \
+  --image=gcr.io/materi-production/api:latest \
+  --platform=managed \
+  --region=us-west1 \
+  --set-env-vars="ENVIRONMENT=production" \
+  --set-secrets="SECRET_KEY=materi-secret-key:latest"
+```
+
+## Environment Variables Reference
+
+### Core Variables (All Environments)
+
+| Variable | Description | Required |
+|----------|-------------|----------|
+| `ENVIRONMENT` | development/staging/test/production | Yes |
+| `DEBUG` | Enable debug mode | Yes |
+| `LOG_LEVEL` | debug/info/warn/error | Yes |
+| `SECRET_KEY` | Application secret (64 chars) | Yes |
+| `DATABASE_URL` | PostgreSQL connection string | Yes |
+| `REDIS_URL` | Redis connection string | Yes |
+
+### Authentication Variables
+
+| Variable | Description | Required |
+|----------|-------------|----------|
+| `JWT_SECRET` | JWT signing secret | Yes |
+| `JWT_SECRET_KEY` | JWT encryption key | Yes |
+| `JWT_REFRESH_SECRET_KEY` | Refresh token secret | Yes |
+| `ENCRYPTION_KEY` | Data encryption key (32 bytes) | Yes |
+
+### Storage Variables
+
+| Variable | Description | Required |
+|----------|-------------|----------|
+| `STORAGE_PROVIDER` | auto/b2/s3/local | Yes |
+| `B2_APPLICATION_KEY_ID` | B2 key ID | If using B2 |
+| `B2_APPLICATION_KEY` | B2 secret key | If using B2 |
+| `B2_BUCKET_NAME` | B2 bucket name | If using B2 |
+| `B2_REGION` | B2 region (us-west-004) | If using B2 |
+
+### Observability Variables
+
+| Variable | Description | Required |
+|----------|-------------|----------|
+| `ENABLE_METRICS` | Enable Prometheus metrics | Yes |
+| `ENABLE_TRACING` | Enable distributed tracing | Recommended |
+| `SENTRY_DSN` | Sentry error tracking | Production |
+| `BETTERSTACK_SOURCE_TOKEN` | BetterStack logging | Production |
+| `STORM_API_KEY` | STORM federation | Production |
+
+### Inter-Service URLs
+
+| Variable | Development | Staging/Production |
+|----------|-------------|-------------------|
+| `API_SERVICE_URL` | http://localhost:8080 | http://api.railway.internal:8080 |
+| `SHIELD_SERVICE_URL` | http://localhost:8000 | http://shield.railway.internal:8000 |
+| `RELAY_SERVICE_URL` | http://localhost:8081 | http://relay.railway.internal:8081 |
+| `FOLIO_SERVICE_URL` | http://localhost:3000 | http://folio.railway.internal:3000 |
+
+## Security Best Practices
+
+### Secret Generation
+
+```bash
+# Generate cryptographically secure secrets
+# 64-character hex string
+openssl rand -hex 64
+
+# 32-byte base64 string
+openssl rand -base64 32
+
+# UUID
+uuidgen | tr '[:upper:]' '[:lower:]'
+```
+
+### Secret Rotation
+
+1. **Generate new secrets** before rotation
+2. **Update Secret Manager** with new values
+3. **Deploy services** in order: Shield → API → Relay
+4. **Verify functionality** with health checks
+5. **Invalidate old tokens** by clearing Redis cache
+
+### Environment Isolation
+
+- **Development**: Local only, no external access
+- **Staging**: Internal network, separate credentials
+- **Production**: Full security, encrypted secrets
+
+## Health Check Configuration
+
+All services expose standardized health endpoints:
+
+```yaml
+# Railway health check configuration
+healthcheck:
+  path: /health
+  interval: 30s
+  timeout: 10s
+  startPeriod: 60s
+```
+
+**Expected responses:**
+- `GET /health` → 200 OK (basic health)
+- `GET /ready` → 200 OK (dependencies healthy)
+- `GET /metrics` → Prometheus metrics
+
+## Troubleshooting
+
+### Common Issues
+
+**Database Connection Failed:**
+```bash
+# Check DATABASE_URL format
+postgresql://user:password@host:port/database?sslmode=require
+
+# Verify SSL mode for environment
+# Development: sslmode=disable
+# Production: sslmode=require
+```
+
+**Redis Connection Timeout:**
+```bash
+# Check Redis password encoding
+# Special characters must be URL-encoded
+redis://:p%40ssword@host:6379/0
+```
+
+**Service Discovery Failed:**
+```bash
+# Verify internal DNS (Railway)
+nslookup api.railway.internal
+
+# Check service is running
+railway status --service api
+```
+
+## Next Steps
+
+- [FOLIO Observability Guide](/docs/mflow/03-folio-observability-guide.mdx)
+- [FORGE Event Schema Reference](/docs/mflow/04-forge-event-schema-reference.mdx)
+- [Development Workflow](/docs/mflow/05-development-workflow-resources.mdx)

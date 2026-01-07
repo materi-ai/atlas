@@ -1,0 +1,41 @@
+---
+title: 'Code standards'
+description: 'Cross-service conventions for maintainable changes'
+---
+
+Materi is polyglot. Standards are enforced per-service, but contributors should follow a shared baseline.
+
+The intent of these standards is to keep changes easy to review, safe to deploy, and easy to operate.
+
+## Baseline expectations
+
+-   Prefer small, reviewable changes.
+-   Keep public contracts stable (or version them).
+-   Document behavior that affects users or integrators.
+
+When in doubt, prefer explicitness over cleverness: clear names, small functions, and straightforward
+control flow usually win in a monorepo.
+
+## Service-level standards
+
+Follow the closest authoritative standard for the code you are changing:
+
+-   Go services: see `internal/engineering/standards/go-standards`
+-   Rust services: see `internal/engineering/standards/rust-standards`
+-   Python services: see `internal/engineering/standards/python-standards`
+-   TypeScript services: see `internal/engineering/standards/typescript-standards`
+-   Protobuf schemas: see `internal/engineering/standards/proto-standards`
+
+## Contracts and schemas
+
+When you change:
+
+-   **REST** behavior: update OpenAPI and regenerate/verify docs reference output.
+-   **Events**: update protobuf in `shared/proto` and ensure downstream consumers remain compatible.
+
+## Verifying standards in practice
+
+-   Run the service’s existing tests or checks (see its `Makefile` / `README.md`).
+-   If you touched an integration surface, ensure docs reflect the behavior:
+    -   HTTP: OpenAPI updated and reference drift check passes
+    -   Events: protobuf updated and compatible with consumers

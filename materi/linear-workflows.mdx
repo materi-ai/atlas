@@ -1,0 +1,295 @@
+# Linear System Design Specification
+
+## 1. Purpose
+
+This document defines the system design and operating model for using **Linear** as the execution management tool for the SaaS organization. Its goal is to:
+
+-   Enable consistent, scalable execution
+-   Preserve long-term operational efficiency
+-   Prevent misuse of Linear as a documentation or knowledge system
+-   Support growth without structural rewrites
+
+This specification is intentionally opinionated and optimized for senior-level discipline.
+
+---
+
+## 2. Design Principles
+
+### 2.1 Tool Boundaries
+
+Linear is used exclusively for:
+
+-   Work coordination
+-   Execution tracking
+-   Decision-making via issues
+
+Linear is **not** used for:
+
+-   Long-form documentation
+-   Onboarding handbooks
+-   Architectural knowledge bases
+-   Organizational memory
+
+All evergreen documentation lives in an external documentation system (e.g., Notion, Confluence, Slab, GitHub Docs).
+
+---
+
+### 2.2 Separation of Concerns
+
+-   **Teams** represent ownership and prioritization authority
+-   **Initiatives** represent strategic intent
+-   **Projects** represent bounded execution
+-   **Issues** represent atomic units of work
+-   **Labels** represent classification, not hierarchy
+
+---
+
+## 3. Organizational Model
+
+### 3.1 Work Domains (Conceptual)
+
+The organization recognizes four primary domains of work:
+
+-   Domain (core business logic)
+-   Platform (shared infrastructure)
+-   Products (customer-facing delivery)
+-   Operations (internal enablement)
+
+These domains are **conceptual value streams** and are **not mapped 1:1 to Linear Teams**.
+
+---
+
+### 3.2 Teams (Execution Units)
+
+Teams are created only where independent backlog ownership and prioritization are required.
+
+#### Approved Teams
+
+-   **Product Engineering**
+
+    -   Owns customer-facing features and core domain logic
+
+-   **Platform**
+
+    -   Owns shared infrastructure, reliability, CI/CD, observability
+
+-   **Operations**
+
+    -   Owns compliance, internal tooling, incident response, enablement
+
+#### Team Description Policy
+
+Team descriptions must be:
+
+-   Short (2–3 sentences)
+-   Execution-oriented
+-   Contain a single canonical link to the team handbook
+
+Example:
+
+```
+Product Engineering owns customer-facing features and core domain logic.
+
+📘 Team Handbook:
+https://notion.so/company/product-eng
+```
+
+---
+
+## 4. Strategic Planning Layer
+
+### 4.1 Initiatives
+
+Initiatives represent long-term strategic themes (typically quarterly or longer).
+
+Characteristics:
+
+-   Cross-project
+-   Outcome-oriented
+-   Stable over time
+
+Examples:
+
+-   Core Domain Evolution
+-   Platform Stability 2025
+-   Product Growth
+-   Operational Readiness
+
+Initiatives answer the question:
+
+> "Why are we doing this work?"
+
+---
+
+## 5. Execution Layer
+
+### 5.1 Projects
+
+Projects are the primary execution containers in Linear.
+
+Characteristics:
+
+-   Time-bounded (weeks to months)
+-   Clearly scoped
+-   Owned by a single team
+-   Linked to exactly one Initiative (when applicable)
+
+#### Naming Convention
+
+Projects must follow this format:
+
+```
+<Category>: <Outcome>
+```
+
+Examples:
+
+-   Domain: Pricing Engine Refactor
+-   Platform: Observability v2
+-   Product: Usage-Based Billing
+-   Ops: SOC2 Preparation
+
+Project descriptions must include:
+
+-   Problem statement
+-   Success criteria
+-   External documentation link (if applicable)
+
+---
+
+### 5.2 Issues
+
+Issues represent atomic units of work.
+
+Rules:
+
+-   One issue = one owner
+-   One issue = one outcome
+-   Issues should be completable within a few days
+
+Issues may not be used for:
+
+-   Brainstorms
+-   Meeting notes
+-   Open-ended research without a decision boundary
+
+---
+
+## 6. Workflow & Status Model
+
+### 6.1 Global Statuses
+
+All teams must use the following core workflow:
+
+-   Backlog
+-   Planned
+-   In Progress
+-   In Review
+-   Blocked
+-   Done
+
+These statuses represent **flow state**, not human activity.
+
+---
+
+### 6.2 Team-Specific Extensions
+
+Teams may add **at most one additional status** if operationally required.
+
+Examples:
+
+-   Platform: Deploying
+-   Operations: Waiting on External
+
+Any additional status must:
+
+-   Be clearly defined
+-   Map cleanly back to flow metrics
+
+---
+
+## 7. Labels & Classification
+
+Labels are used for lightweight classification only.
+
+Approved Labels:
+
+-   domain
+-   platform
+-   product
+-   ops
+-   tech-debt
+-   compliance
+
+Rules:
+
+-   Labels do not imply ownership
+-   Labels do not replace Projects or Initiatives
+-   Overuse of labels is discouraged
+
+---
+
+## 8. Documentation Strategy
+
+### 8.1 External Documentation
+
+All long-form documentation must live outside Linear, including:
+
+-   Team onboarding
+-   Architecture overviews
+-   Operating manuals
+-   Decision records
+
+### 8.2 Linking Policy
+
+Linear entities may link to external docs, but must not duplicate them.
+
+Acceptable locations for links:
+
+-   Team descriptions
+-   Project descriptions
+-   Issue templates
+
+---
+
+## 9. Operational Discipline
+
+### 9.1 WIP Management
+
+-   Teams should limit active Projects
+-   Issues should not remain in `In Progress` without movement
+-   `Blocked` must include a blocking reason
+
+### 9.2 Hygiene Rules
+
+-   Close issues promptly when done
+-   Avoid zombie issues
+-   Archive stale projects
+
+---
+
+## 10. Scalability & Evolution
+
+This system is designed to:
+
+-   Support team growth without restructuring
+-   Allow reorganization by changing ownership, not hierarchy
+-   Preserve historical data integrity
+
+Future extensions may include:
+
+-   Issue templates per work type
+-   OKR alignment via Initiatives
+-   Cycle-time and throughput reporting
+
+---
+
+## 11. Summary
+
+This specification establishes Linear as:
+
+-   A high-signal execution system
+-   A low-friction coordination layer
+-   A deliberately constrained tool
+
+By enforcing these boundaries, the organization gains clarity, speed, and long-term operational leverage.

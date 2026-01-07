@@ -1,0 +1,526 @@
+---
+title: "MFLOW Development Workflow & Resources"
+description: "Development workflows, debugging guides, testing strategies, and essential resources for the MFLOW ecosystem"
+version: "1.0.0"
+lastUpdated: "2025-12-19"
+tags: ["development", "workflow", "testing", "debugging", "resources"]
+---
+
+# MFLOW Development Workflow & Resources
+
+This guide consolidates development workflows, debugging strategies, testing approaches, and essential resources for the MFLOW ecosystem.
+
+## Local Development Setup
+
+### Prerequisites
+
+```bash
+# macOS
+brew install go@1.22 python@3.11 rustup docker-compose
+brew install protobuf protoc-gen-go protoc-gen-go-grpc
+
+# Install Rust toolchain
+rustup default stable
+rustup component add clippy rustfmt
+
+# Node.js (for client apps)
+brew install node@20
+corepack enable
+```
+
+### Quick Start
+
+```bash
+# 1. Clone and setup
+git clone https://github.com/materi-ai/materi.git
+cd materi
+make setup
+
+# 2. Copy environment file
+cp operations/env/.env.development .env
+
+# 3. Generate secrets (replace placeholders in .env)
+openssl rand -hex 64  # SECRET_KEY
+openssl rand -hex 64  # JWT_SECRET
+
+# 4. Start infrastructure
+make start
+
+# 5. Verify services
+make status
+```
+
+### Service URLs (Local)
+
+| Service | HTTP | Metrics | WebSocket |
+|---------|------|---------|-----------|
+| API | http://localhost:8080 | http://localhost:9090/metrics | - |
+| Shield | http://localhost:8000 | http://localhost:9091/metrics | - |
+| Relay | http://localhost:8081 | http://localhost:9092/metrics | ws://localhost:8081 |
+| Folio | http://localhost:3000 | - | - |
+| Grafana | http://localhost:3001 | - | - |
+| Jaeger | http://localhost:16686 | - | - |
+
+## Development Commands
+
+### Root-Level Makefile
+
+```bash
+# Setup & Build
+make setup              # Initial project setup
+make build              # Build all services
+make start              # Start core services
+make start-full         # Start with monitoring stack
+make stop               # Stop all services
+make restart            # Restart services
+
+# Development
+make dev-api            # API with hot reload
+make dev-shield         # Shield with hot reload
+make dev-relay          # Relay with cargo watch
+
+# Testing
+make test               # Run all tests
+make test-service SERVICE=api
+make lint               # Run linters
+make format             # Format code
+make qa                 # Full QA: lint + test + security
+
+# Database
+make migrate            # Run migrations
+make migrate-status     # Show migration status
+make db-shell           # PostgreSQL shell
+make redis-shell        # Redis CLI
+
+# Monitoring
+make logs               # Tail all logs
+make logs-service SERVICE=api
+make metrics            # Show metrics
+```
+
+### Service-Specific Commands
+
+**API (Go):**
+```bash
+cd domain/api
+make build              # Build binary
+make run                # Run locally
+make dev                # Hot reload with air
+make test               # Run tests
+make lint               # golangci-lint
+make migrate-up         # Apply migrations
+```
+
+**Shield (Django):**
+```bash
+cd domain/shield
+python manage.py runserver          # Dev server
+python manage.py test               # Run tests
+python manage.py migrate            # Apply migrations
+python manage.py createsuperuser    # Create admin
+pytest --cov=apps                   # Coverage report
+```
+
+**Relay (Rust):**
+```bash
+cd domain/relay
+make build              # Release build
+make dev                # Watch mode
+cargo test              # Run tests
+cargo clippy            # Lint
+make sqlx-prepare       # Prepare offline queries
+```
+
+## Debugging Strategies
+
+### Cross-Service Request Tracing
+
+1. **Find correlation ID** from logs or response headers:
+```bash
+# Get correlation ID from API response
+curl -v http://localhost:8080/api/v1/documents | grep X-Request-ID
+```
+
+2. **Search logs:**
+```bash
+# Search across services
+make logs | grep "correlation_id=abc123"
+
+# Or individual service
+docker logs materi-api 2>&1 | grep "abc123"
+```
+
+3. **View in Jaeger:**
+```
+http://localhost:16686/search?service=materi-api&tags={"correlation_id":"abc123"}
+```
+
+### Event Stream Debugging
+
+```bash
+# Connect to Redis
+make redis-shell
+
+# View stream info
+XINFO STREAM materi:events:user
+XINFO GROUPS materi:events:user
+
+# Read events
+XREAD COUNT 10 STREAMS materi:events:user 0
+
+# Read latest events (wait up to 5 seconds)
+XREAD BLOCK 5000 STREAMS materi:events:user $
+
+# Check consumer group lag
+XPENDING materi:events:user api-consumers
+```
+
+### Database Debugging
+
+```bash
+# Connect to PostgreSQL
+make db-shell
+
+# Show active connections
+SELECT * FROM pg_stat_activity WHERE datname = 'materi_dev';
+
+# Show slow queries (if pg_stat_statements enabled)
+SELECT query, calls, mean_time FROM pg_stat_statements ORDER BY mean_time DESC LIMIT 10;
+
+# Check table sizes
+SELECT tablename, pg_size_pretty(pg_total_relation_size(tablename::text))
+FROM pg_tables WHERE schemaname = 'public' ORDER BY pg_total_relation_size(tablename::text) DESC;
+```
+
+### Performance Profiling
+
+**Go (API/Folio):**
+```bash
+# Enable pprof (already enabled in dev)
+curl http://localhost:8080/debug/pprof/heap > heap.prof
+go tool pprof heap.prof
+
+# CPU profiling
+curl http://localhost:8080/debug/pprof/profile?seconds=30 > cpu.prof
+go tool pprof cpu.prof
+```
+
+**Rust (Relay):**
+```bash
+cd domain/relay
+make flamegraph         # Generate flamegraph
+make bench              # Run benchmarks
+```
+
+**Python (Shield):**
+```bash
+# Profile Django views
+python -m cProfile -o profile.prof manage.py runserver
+python -c "import pstats; pstats.Stats('profile.prof').sort_stats('cumtime').print_stats(20)"
+```
+
+## Testing Strategies
+
+### Unit Tests
+
+**API (Go):**
+```bash
+cd domain/api
+go test -v ./internal/service/... -run TestDocumentService
+go test -v -race -coverprofile=coverage.out ./...
+go tool cover -html=coverage.out
+```
+
+**Shield (Django):**
+```bash
+cd domain/shield
+pytest apps/users/tests/test_views.py::TestUserView -v
+pytest --cov=apps --cov-report=html
+```
+
+**Relay (Rust):**
+```bash
+cd domain/relay
+cargo test test_collaboration -- --nocapture
+cargo tarpaulin --out Html  # Coverage
+```
+
+### Integration Tests
+
+```bash
+# Start test infrastructure
+docker-compose -f docker-compose.test.yml up -d
+
+# Run integration tests
+cd testing/integration
+pytest -v --tb=short
+
+# Cleanup
+docker-compose -f docker-compose.test.yml down -v
+```
+
+### E2E Tests (Playwright)
+
+```bash
+cd testing/e2e
+npm install
+npx playwright test
+npx playwright test --ui  # Interactive mode
+npx playwright show-report
+```
+
+### Load Testing (Locust)
+
+```bash
+cd testing/load
+pip install locust
+
+# Run against local
+locust -f locustfile.py --host=http://localhost:8080
+
+# Headless with stats
+locust -f locustfile.py --host=http://localhost:8080 \
+  --users 100 --spawn-rate 10 --run-time 60s --headless
+```
+
+## Git Workflow
+
+### Branch Naming
+
+```
+feature/ABC-123-add-document-sharing
+bugfix/ABC-456-fix-auth-timeout
+hotfix/ABC-789-critical-security-patch
+chore/update-dependencies
+docs/improve-api-documentation
+```
+
+### Commit Messages
+
+```bash
+# Format
+<type>(<scope>): <description>
+
+# Examples
+feat(api): add document sharing endpoint
+fix(shield): resolve token refresh race condition
+docs(relay): update WebSocket protocol documentation
+refactor(folio): extract metrics collector
+test(api): add document service unit tests
+chore(deps): update Go dependencies
+```
+
+### Pre-commit Checks
+
+```bash
+# Install hooks
+make install-hooks
+
+# Manual run
+make lint
+make test
+make security-scan
+```
+
+## CI/CD Pipeline
+
+### GitHub Actions Workflow
+
+```yaml
+# .github/workflows/ci.yml
+name: CI
+
+on: [push, pull_request]
+
+jobs:
+  test-api:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v5
+        with:
+          go-version: '1.22'
+      - run: cd domain/api && make test
+
+  test-shield:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - run: cd domain/shield && pip install -r requirements.txt && pytest
+
+  test-relay:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+      - run: cd domain/relay && cargo test
+```
+
+### Railway Deployment
+
+```bash
+# Deploy to staging
+railway up --environment staging
+
+# Deploy to production
+railway up --environment production
+
+# Rollback
+railway rollback --environment production
+```
+
+## Essential Resources
+
+### Documentation Links
+
+| Resource | URL |
+|----------|-----|
+| Go Documentation | https://go.dev/doc/ |
+| Django REST Framework | https://www.django-rest-framework.org/ |
+| Axum Framework | https://docs.rs/axum/latest/axum/ |
+| Redis Streams | https://redis.io/docs/data-types/streams/ |
+| Protocol Buffers | https://protobuf.dev/programming-guides/proto3/ |
+| Railway Docs | https://docs.railway.app/ |
+| BetterStack Logs | https://betterstack.com/docs/logs/ |
+
+### Monitoring URLs
+
+| Environment | Grafana | Jaeger | BetterStack |
+|-------------|---------|--------|-------------|
+| Development | http://localhost:3001 | http://localhost:16686 | - |
+| Staging | https://grafana.staging.materi.com | Via STORM | https://logs.betterstack.com |
+| Production | https://grafana.materi.com | Via STORM | https://logs.betterstack.com |
+
+### API Documentation
+
+| Service | Endpoint | Format |
+|---------|----------|--------|
+| API | /api/docs | OpenAPI/Swagger |
+| Shield | /api/schema/ | DRF Schema |
+| Relay | /playground | GraphQL Playground |
+
+### Health Check Endpoints
+
+```bash
+# All services expose these endpoints
+GET /health  # Basic health (200 = up)
+GET /ready   # Readiness (200 = dependencies ok)
+GET /metrics # Prometheus metrics
+```
+
+## Troubleshooting Checklist
+
+### Service Won't Start
+
+- [ ] Check `.env` file exists and has correct values
+- [ ] Verify PostgreSQL is running: `docker ps | grep postgres`
+- [ ] Verify Redis is running: `docker ps | grep redis`
+- [ ] Check port conflicts: `lsof -i :8080`
+- [ ] View logs: `make logs-service SERVICE=api`
+
+### Database Connection Failed
+
+- [ ] Verify DATABASE_URL format
+- [ ] Check PostgreSQL container: `docker logs materi-postgres`
+- [ ] Test connection: `psql $DATABASE_URL -c "SELECT 1"`
+- [ ] Verify SSL mode matches environment
+
+### Redis Connection Timeout
+
+- [ ] Check Redis container: `docker logs materi-redis`
+- [ ] Test connection: `redis-cli -u $REDIS_URL ping`
+- [ ] Verify password encoding (URL-encode special chars)
+
+### Events Not Being Processed
+
+- [ ] Check consumer group exists: `XINFO GROUPS materi:events:user`
+- [ ] Check pending messages: `XPENDING materi:events:user api-consumers`
+- [ ] Verify consumer is running: Check service logs
+- [ ] Check for dead letter queue entries
+
+### Authentication Failing
+
+- [ ] Verify JWT_SECRET matches across services
+- [ ] Check token expiration settings
+- [ ] Verify CORS_ALLOWED_ORIGINS includes your client URL
+- [ ] Check Shield service is accessible from API
+
+## Quick Reference
+
+### Generate Secrets
+
+```bash
+# 64-character hex (for SECRET_KEY, JWT_SECRET)
+openssl rand -hex 64
+
+# 32-byte base64 (for ENCRYPTION_KEY)
+openssl rand -base64 32
+
+# UUID
+uuidgen | tr '[:upper:]' '[:lower:]'
+```
+
+### Database Migrations
+
+```bash
+# API (Go)
+cd domain/api && make migrate-up
+
+# Shield (Django)
+cd domain/shield && python manage.py migrate
+
+# Relay (Rust/SQLx)
+cd domain/relay && sqlx migrate run
+```
+
+### Clear Caches
+
+```bash
+# Redis (flush specific database)
+redis-cli -n 0 FLUSHDB
+
+# Django cache
+python manage.py clear_cache
+
+# API cache (via endpoint)
+curl -X POST http://localhost:8080/admin/cache/clear
+```
+
+### View Active Connections
+
+```bash
+# WebSocket connections (Relay)
+curl http://localhost:8081/admin/connections
+
+# Database connections
+psql -c "SELECT count(*) FROM pg_stat_activity WHERE datname = 'materi_dev'"
+
+# Redis connections
+redis-cli CLIENT LIST | wc -l
+```
+
+---
+
+## Additional Resources
+
+### Community
+
+- **GitHub Issues**: Report bugs and request features
+- **Slack**: #materi-dev for development discussions
+- **Status Page**: status.materi.com
+
+### Learning Materials
+
+- [MFLOW Architecture Guide](/docs/mflow/01-mflow-architecture-guide.mdx)
+- [Environment Setup](/docs/mflow/02-environment-setup-railway.mdx)
+- [FOLIO Observability](/docs/mflow/03-folio-observability-guide.mdx)
+- [FORGE Event Schemas](/docs/mflow/04-forge-event-schema-reference.mdx)
+
+### External Tutorials
+
+- [Building Event-Driven Systems with Redis Streams](https://redis.io/docs/data-types/streams-tutorial/)
+- [Operational Transform Explained](https://operational-transformation.github.io/)
+- [Distributed Tracing with OpenTelemetry](https://opentelemetry.io/docs/)

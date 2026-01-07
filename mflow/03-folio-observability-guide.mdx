@@ -1,0 +1,412 @@
+---
+title: "FOLIO Observability Guide"
+description: "Complete guide to FOLIO monitoring, STORM federation, metrics, tracing, and alerting"
+version: "1.0.0"
+lastUpdated: "2025-12-19"
+tags: ["observability", "folio", "storm", "prometheus", "grafana", "betterstack"]
+---
+
+# FOLIO Observability Guide
+
+FOLIO is the observability aggregation hub for the MFLOW ecosystem, providing centralized metrics collection, distributed tracing, and STORM federation.
+
+## Architecture Overview
+
+```
+┌─────────────────────────────────────────────────────────────────────────┐
+│                       FOLIO Observability Stack                          │
+├─────────────────────────────────────────────────────────────────────────┤
+│                                                                         │
+│   ┌─────────┐    ┌─────────┐    ┌─────────┐    ┌─────────┐             │
+│   │   API   │    │ Shield  │    │  Relay  │    │  Aria   │             │
+│   │ :9090   │    │ :9090   │    │ :9090   │    │ :9090   │             │
+│   └────┬────┘    └────┬────┘    └────┬────┘    └────┬────┘             │
+│        │              │              │              │                   │
+│        └──────────────┴──────────────┴──────────────┘                   │
+│                              │                                          │
+│                              ▼                                          │
+│                    ┌─────────────────┐                                  │
+│                    │   Prometheus    │                                  │
+│                    │   (Scraping)    │                                  │
+│                    └────────┬────────┘                                  │
+│                             │                                           │
+│              ┌──────────────┼──────────────┐                           │
+│              ▼              ▼              ▼                            │
+│        ┌──────────┐   ┌──────────┐   ┌──────────┐                      │
+│        │  FOLIO   │   │ Grafana  │   │ Alert-   │                      │
+│        │ (Agg)    │   │ (Viz)    │   │ Manager  │                      │
+│        └────┬─────┘   └──────────┘   └────┬─────┘                      │
+│             │                              │                            │
+│             ▼                              ▼                            │
+│        ┌──────────┐                  ┌──────────┐                       │
+│        │  STORM   │                  │  Slack/  │                       │
+│        │(sparki)  │                  │BetterStk │                       │
+│        └──────────┘                  └──────────┘                       │
+│                                                                         │
+└─────────────────────────────────────────────────────────────────────────┘
+```
+
+## Components
+
+### 1. Prometheus (Metrics Collection)
+
+**Configuration:** `operations/folio/prometheus/prometheus-materi.yml`
+
+```yaml
+global:
+  scrape_interval: 15s
+  evaluation_interval: 15s
+  external_labels:
+    cluster: "materi-platform"
+    environment: "${ENVIRONMENT:-development}"
+
+scrape_configs:
+  - job_name: 'materi-api'
+    static_configs:
+      - targets: ['api:9090']
+    metrics_path: /metrics
+
+  - job_name: 'materi-shield'
+    static_configs:
+      - targets: ['shield:9090']
+
+  - job_name: 'materi-relay'
+    static_configs:
+      - targets: ['relay:9090']
+
+  - job_name: 'postgres'
+    static_configs:
+      - targets: ['postgres-exporter:9187']
+
+  - job_name: 'redis'
+    static_configs:
+      - targets: ['redis-exporter:9121']
+```
+
+### 2. Grafana Dashboards
+
+**Location:** `operations/folio/grafana/`
+
+| Dashboard | Purpose | Key Metrics |
+|-----------|---------|-------------|
+| `dashboard-service-health.json` | Service uptime, errors | availability, error_rate |
+| `dashboard-shield-auth.json` | Authentication metrics | login_rate, token_issued |
+| `dashboard-relay-service.json` | WebSocket/collaboration | connections, sync_latency |
+| `dashboard-infrastructure-overview.json` | System health | cpu, memory, disk |
+| `dashboard-cicd-metrics.json` | Build/deploy metrics | build_duration, coverage |
+| `dashboard-backpressure-metrics.json` | Queue health | buffer_size, depth |
+
+**Importing Dashboards:**
+```bash
+# Via Grafana API
+curl -X POST -H "Content-Type: application/json" \
+  -d @dashboard-service-health.json \
+  http://admin:admin@localhost:3000/api/dashboards/db
+```
+
+### 3. Alert Rules
+
+**Configuration:** `operations/folio/prometheus/alert-rules.yml`
+
+#### Critical Alerts (Immediate Action Required)
+
+```yaml
+- alert: ServiceDown
+  expr: up{job=~"materi-.*"} == 0
+  for: 2m
+  labels:
+    severity: critical
+  annotations:
+    summary: "{{ $labels.job }} is down"
+    runbook_url: "https://docs.materi.com/runbooks/service-down"
+
+- alert: DatabaseDown
+  expr: up{job="postgres"} == 0
+  for: 1m
+  labels:
+    severity: critical
+  annotations:
+    summary: "PostgreSQL database is down"
+
+- alert: DDoSAttackDetected
+  expr: shield_ddos_detected == 1
+  for: 1m
+  labels:
+    severity: critical
+  annotations:
+    summary: "DDoS attack detected by Shield Advanced"
+```
+
+#### Warning Alerts (Investigation Required)
+
+```yaml
+- alert: HighErrorRate
+  expr: |
+    (sum(rate(http_requests_total{status=~"5.."}[5m]))
+    / sum(rate(http_requests_total[5m]))) > 0.05
+  for: 5m
+  labels:
+    severity: warning
+
+- alert: BetterStackConnectionLost
+  expr: betterstack_connection_status == 0
+  for: 2m
+  labels:
+    severity: warning
+```
+
+### 4. BetterStack Integration
+
+**Log Aggregation Configuration:**
+
+```python
+# Shield Django settings (production.py)
+BETTERSTACK_SOURCE_TOKEN = env("BETTERSTACK_SOURCE_TOKEN")
+
+LOGGING["handlers"]["betterstack"] = {
+    "class": "logtail.LogtailHandler",
+    "source_token": BETTERSTACK_SOURCE_TOKEN,
+    "host": "https://logs.betterstack.com",
+    "level": "INFO",
+}
+```
+
+**Required Environment Variables:**
+```bash
+BETTERSTACK_SOURCE_TOKEN=<from-betterstack-dashboard>
+BETTERSTACK_API_TOKEN=<api-access-token>
+BETTERSTACK_TELEMETRY_TOKEN=<telemetry-token>
+```
+
+**Metrics Exported:**
+- `betterstack_connection_status` - Connection health (0/1)
+- `betterstack_logs_sent_total` - Logs sent counter
+- `betterstack_send_errors_total` - Send errors counter
+- `betterstack_buffer_size` - Local buffer queue depth
+
+### 5. STORM Federation
+
+**Location:** `operations/folio/internal/federation/storm_bridge.go`
+
+STORM enables bidirectional metric and alert flow with sparki.tools infrastructure.
+
+```go
+type StormBridge struct {
+    webhookURL string
+    apiURL     string
+    apiKey     string
+    client     *http.Client
+}
+
+// Send metrics to STORM
+func (s *StormBridge) SendMetric(metric Metric) error {
+    payload := StormMetricPayload{
+        Name:      metric.Name,
+        Value:     metric.Value,
+        Timestamp: metric.Timestamp,
+        Labels:    metric.Labels,
+        Service:   metric.Service,
+        Origin:    "folio",
+    }
+    return s.postJSON(s.webhookURL, payload)
+}
+```
+
+**Configuration:**
+```bash
+STORM_WEBHOOK_URL=https://storm.sparki.tools/webhooks/folio
+STORM_API_URL=https://storm.sparki.tools/api
+STORM_API_KEY=${PROD_STORM_API_KEY}
+```
+
+## Key Metrics Reference
+
+### Service Metrics
+
+```promql
+# Request rate
+rate(http_requests_total[5m])
+
+# Error rate percentage
+100 * (
+  sum(rate(http_requests_total{status=~"5.."}[5m]))
+  / sum(rate(http_requests_total[5m]))
+)
+
+# P95 latency
+histogram_quantile(0.95,
+  sum(rate(http_request_duration_seconds_bucket[5m])) by (le)
+)
+
+# Service availability (SLO)
+avg_over_time(up{job="materi-api"}[24h]) * 100
+```
+
+### Database Metrics
+
+```promql
+# Connection pool utilization
+(pg_stat_activity_max_connections - pg_stat_activity_count)
+/ pg_stat_activity_max_connections
+
+# Query latency P95
+histogram_quantile(0.95,
+  rate(pg_stat_statements_mean_time[5m])
+)
+
+# Cache hit ratio
+pg_stat_database_blks_hit
+/ (pg_stat_database_blks_hit + pg_stat_database_blks_read)
+```
+
+### Redis Metrics
+
+```promql
+# Memory utilization
+redis_memory_used_bytes / redis_memory_max_bytes
+
+# Connection count
+redis_connected_clients
+
+# Eviction rate
+rate(redis_evicted_keys_total[5m])
+```
+
+### Storage Metrics (B2/S3)
+
+```promql
+# Storage throughput
+sum(rate(storage_bytes_uploaded_total[1m]))
+
+# Operation error rate
+sum(rate(storage_operation_errors_total[5m]))
+/ sum(rate(storage_operations_total[5m]))
+
+# P95 latency
+histogram_quantile(0.95,
+  sum(rate(storage_operation_duration_seconds_bucket[5m])) by (le)
+)
+```
+
+### Collaboration Metrics (Relay)
+
+```promql
+# Active WebSocket connections
+relay_websocket_connections_current
+
+# Sync latency P99
+histogram_quantile(0.99,
+  sum(rate(relay_sync_duration_seconds_bucket[5m])) by (le)
+)
+
+# OT conflicts per minute
+rate(relay_ot_conflicts_total[1m]) * 60
+
+# Active collaborations
+materi_active_collaborations_gauge
+```
+
+## Recording Rules
+
+**Location:** `operations/folio/prometheus/recording-rules.yml`
+
+Pre-computed metrics for faster dashboards:
+
+```yaml
+groups:
+  - name: http_metrics
+    rules:
+      - record: service:http_requests_per_second:rate5m
+        expr: sum(rate(http_requests_total[5m])) by (service)
+
+      - record: service:http_latency_p95:rate5m
+        expr: |
+          histogram_quantile(0.95,
+            sum(rate(http_request_duration_seconds_bucket[5m])) by (le, service)
+          )
+
+      - record: service:http_error_rate:rate5m
+        expr: |
+          sum(rate(http_requests_total{status=~"5.."}[5m])) by (service)
+          / sum(rate(http_requests_total[5m])) by (service)
+```
+
+## Distributed Tracing (Jaeger)
+
+**Configuration:**
+```bash
+ENABLE_TRACING=true
+TRACING_ENDPOINT=http://jaeger.railway.internal:14268/api/traces
+TRACING_SERVICE_NAME=materi-api
+TRACING_SAMPLE_RATE=0.1  # 10% in production
+```
+
+**Trace Context Propagation:**
+- HTTP: `X-Request-ID`, `traceparent`, `tracestate` headers
+- Events: `trace_id`, `span_id`, `parent_span_id` fields
+
+**Accessing Traces:**
+- Development: http://localhost:16686
+- Production: Via STORM dashboard
+
+## Alerting Channels
+
+### Slack Integration
+
+```bash
+SLACK_WEBHOOK_CRITICAL=https://hooks.slack.com/services/T.../B.../xxx
+SLACK_WEBHOOK_DEPLOYMENTS=https://hooks.slack.com/services/T.../B.../yyy
+SLACK_WEBHOOK_DEVOPS=https://hooks.slack.com/services/T.../B.../zzz
+```
+
+### AlertManager Configuration
+
+```yaml
+# operations/prometheus/alertmanager.yml
+receivers:
+  - name: 'critical'
+    slack_configs:
+      - api_url: '${SLACK_WEBHOOK_CRITICAL}'
+        channel: '#alerts-critical'
+        title: '{{ .GroupLabels.alertname }}'
+
+  - name: 'warning'
+    slack_configs:
+      - api_url: '${SLACK_WEBHOOK_DEVOPS}'
+        channel: '#alerts-warning'
+
+route:
+  receiver: 'warning'
+  routes:
+    - match:
+        severity: critical
+      receiver: 'critical'
+```
+
+## Runbooks
+
+All critical alerts should have associated runbooks:
+
+| Alert | Runbook URL |
+|-------|-------------|
+| ServiceDown | `https://docs.materi.com/runbooks/service-down` |
+| DatabaseDown | `https://docs.materi.com/runbooks/database-down` |
+| StorageProviderUnreachable | `https://docs.materi.com/runbooks/storage-provider-down` |
+| DDoSAttackDetected | `https://docs.materi.com/runbooks/ddos-attack` |
+
+## Environment-Specific Configuration
+
+| Setting | Development | Staging | Production |
+|---------|-------------|---------|------------|
+| `ENABLE_METRICS` | true | true | true |
+| `ENABLE_TRACING` | true | true | true |
+| `TRACING_SAMPLE_RATE` | 1.0 | 0.5 | 0.1 |
+| `PROMETHEUS_ENABLED` | true | true | true |
+| `ALERTMANAGER_ENABLED` | false | true | true |
+| `SENTRY_DSN` | (empty) | staging-dsn | prod-dsn |
+| `BETTERSTACK_SOURCE_TOKEN` | (empty) | staging-token | prod-token |
+
+## Next Steps
+
+- [FORGE Event Schema Reference](/docs/mflow/04-forge-event-schema-reference.mdx)
+- [Development Workflow](/docs/mflow/05-development-workflow-resources.mdx)

@@ -1,0 +1,20 @@
+---
+name: 'HTTP bearer auth (curl)'
+description: 'Reusable pattern for authenticated HTTP requests'
+---
+
+This snippet shows a copy/paste-friendly pattern for calling an authenticated HTTP endpoint.
+
+```bash
+export API_BASE_URL="http://localhost:8000"
+export API_TOKEN="REPLACE_ME"
+
+curl -sS "$API_BASE_URL/api/v1/user/profile/" \
+  -H "Authorization: Bearer $API_TOKEN" \
+  -H "Accept: application/json"
+```
+
+Notes:
+
+-   `Authorization: Bearer ...` is the standard header shape used across many services.
+-   The exact endpoint and token issuance flow depends on the service/environment.

@@ -1,0 +1,30 @@
+## Event schemas (protobuf)
+
+This snippet is generated from the canonical protobuf files in `shared/proto`. It is intended to be embedded into event reference pages to prevent drift.
+
+### Sources
+
+- `shared/proto/base_event.proto` (`sha256:c26c3f9ec333`)
+- `shared/proto/chat_events.proto` (`sha256:6a277e157626`)
+- `shared/proto/collaboration_events.proto` (`sha256:26a3a9127ac2`)
+- `shared/proto/comment_events.proto` (`sha256:e98088c38431`)
+- `shared/proto/document_events.proto` (`sha256:acd296c95513`)
+- `shared/proto/unified_document_events.proto` (`sha256:b7a2d3f938ed`)
+- `shared/proto/user_events.proto` (`sha256:7d83b27678ca`)
+- `shared/proto/version_events.proto` (`sha256:256064645825`)
+- `shared/proto/workspace_events.proto` (`sha256:6016f8208ee0`)
+
+### Message index
+
+| File | Messages |
+|---|---|
+| `shared/proto/base_event.proto` | `BaseEvent` |
+| `shared/proto/chat_events.proto` | `ConversationCreatedEvent`, `ConversationUpdatedEvent`, `ConversationDeletedEvent`, `ConversationArchivedEvent`, `MessageSentEvent`, `MessageStreamStartedEvent`, `MessageStreamChunkEvent`, `MessageStreamCompletedEvent`, `MessageStreamErrorEvent`, `MessageRegeneratedEvent`, `MessageEditedEvent`, `MessageDeletedEvent`, `MessageFeedbackEvent`, `TypingIndicatorEvent`, `AIProcessingEvent`, `ContextAttachedEvent`, `ContextDetachedEvent`, `ContextAttachment`, `TextRange`, `TokenUsage`, `AIConfiguration` |
+| `shared/proto/collaboration_events.proto` | `OperationAppliedEvent`, `PresenceUpdateEvent`, `CursorMovedEvent`, `DocumentLockedEvent`, `DocumentUnlockedEvent`, `ConflictDetectedEvent`, `VectorClock`, `CursorPosition`, `SelectionRange`, `ViewportInfo` |
+| `shared/proto/comment_events.proto` | `CommentCreatedEvent`, `CommentUpdatedEvent`, `CommentDeletedEvent`, `CommentResolvedEvent`, `CommentReactionAddedEvent`, `CommentReactionRemovedEvent`, `CommentReplyAddedEvent`, `CommentThreadUpdatedEvent`, `CommentPosition`, `CommentBatchEvent` |
+| `shared/proto/document_events.proto` | `DocumentCreatedEvent`, `DocumentUpdatedEvent`, `DocumentDeletedEvent`, `DocumentSharedEvent`, `DocumentAccessRevokedEvent`, `DocumentExportedEvent`, `ShareRecipient` |
+| `shared/proto/unified_document_events.proto` | `UnifiedDocumentCreatedEvent`, `UnifiedDocumentConvertedEvent`, `ViewUpdatedEvent`, `ViewContentSyncEvent`, `ViewLayoutChangedEvent`, `EnabledViewsChangedEvent`, `VariableCreatedEvent`, `VariableUpdatedEvent`, `VariableDeletedEvent`, `VariableReferencedEvent`, `CrossViewSyncEvent`, `SharedVariable`, `VariableSource` |
+| `shared/proto/user_events.proto` | `UserCreatedEvent`, `UserUpdatedEvent`, `UserDeletedEvent`, `UserSuspendedEvent`, `UserReactivatedEvent`, `PermissionsChangedEvent`, `PasswordChangedEvent`, `EmailVerifiedEvent`, `LoginEvent`, `LogoutEvent` |
+| `shared/proto/version_events.proto` | `VersionCreatedEvent`, `VersionRestoredEvent`, `VersionComparedEvent`, `VersionHistoryAccessedEvent`, `VersionSnapshotCreatedEvent`, `VersionPrunedEvent`, `DiffStats`, `VersionBatchEvent` |
+| `shared/proto/workspace_events.proto` | `WorkspaceCreatedEvent`, `WorkspaceUpdatedEvent`, `WorkspaceDeletedEvent`, `MemberAddedEvent`, `MemberRemovedEvent`, `MemberRoleChangedEvent`, `WorkspaceInvitationSentEvent`, `WorkspaceInvitationAcceptedEvent`, `WorkspaceSubscriptionChangedEvent`, `WorkspaceSettings` |
+

@@ -1,0 +1,19 @@
+{
+  "atlas_root": "/Users/alexarno/materi/platform/atlas",
+  "generated_by": "platform/atlas/scripts/sync_reference.py",
+  "repo_root": "/Users/alexarno/materi",
+  "sources": [
+    {
+      "dest": "openapi/openapi.json",
+      "kind": "openapi",
+      "sha256": "919eb7a392aafe9825cc9fc0e5b2174643803e1f825816a5a2cb95fb20a94aa9",
+      "source": "platform/atlas/__ignore__/api-reference/openapi.json"
+    },
+    {
+      "dest": null,
+      "kind": "proto",
+      "sha256": "d32c3093451608f836209f0618f337b28bbd048ddac81e27ff7ec19a7591e55b",
+      "source": "shared/proto"
+    }
+  ]
+}

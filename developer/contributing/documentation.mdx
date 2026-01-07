@@ -1,0 +1,39 @@
+---
+title: 'Documentation'
+description: 'How to keep docs accurate across many services'
+---
+
+Documentation in Materi is treated as an operational artifact.
+
+The goal is that someone new to the system can follow the docs and arrive at the same result you
+did, without having to guess which parts are outdated.
+
+## Source-of-truth rules
+
+Follow [/documentation-contract](/documentation-contract).
+
+In short:
+
+-   Don’t duplicate machine-readable truth.
+-   Generate or reference OpenAPI/proto/event schemas.
+-   Keep narrative docs high-level and link to canonical specs.
+
+## Updating reference material
+
+From `platform/atlas`:
+
+-   Sync canonical references: `python3 scripts/sync_reference.py`
+-   Verify no drift: `python3 scripts/sync_reference.py --check`
+
+## Avoiding duplication
+
+Use MDX snippets for content shared across many pages.
+
+-   Snippets live in `platform/atlas/snippets`
+-   Import example: `import MySnippet from '/snippets/path/to/file.mdx'`
+
+## Quick checklist
+
+-   Link to the canonical spec when describing API or event shapes.
+-   Prefer short “how to verify” steps over long narrative.
+-   If you can’t verify something in-repo, say so explicitly and point to the closest source of truth.

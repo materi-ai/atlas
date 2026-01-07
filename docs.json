@@ -1,122 +1,875 @@
 {
-  "$schema": "https://mintlify.com/docs.json",
-  "theme": "mint",
-  "name": "Mint Starter Kit",
-  "colors": {
-    "primary": "#16A34A",
-    "light": "#07C983",
-    "dark": "#15803D"
-  },
-  "favicon": "/favicon.svg",
-  "navigation": {
-    "tabs": [
-      {
-        "tab": "Guides",
-        "groups": [
-          {
-            "group": "Getting started",
-            "pages": [
-              "index",
-              "quickstart",
-              "development"
+    "$schema": "https://mintlify.com/docs.json",
+    "theme": "mint",
+    "name": "Materi Documentation",
+    "openapi": "/openapi/openapi.json",
+    "colors": {
+        "primary": "#4A90E2",
+        "light": "#7B68EE",
+        "dark": "#2E5C8A"
+    },
+    "favicon": "/favicon.svg",
+    "logo": {
+        "light": "/logo/light.svg",
+        "dark": "/logo/dark.svg",
+        "href": "https://materi.com"
+    },
+    "navbar": {
+        "links": [
+            {
+                "label": "Customer Portal",
+                "href": "https://app.materi.com"
+            },
+            {
+                "label": "Enterprise",
+                "href": "https://enterprise.materi.com"
+            },
+            {
+                "label": "Status",
+                "href": "https://status.materi.com"
+            }
+        ],
+        "primary": {
+            "type": "button",
+            "label": "Get Started",
+            "href": "https://app.materi.com/signup"
+        }
+    },
+    "navigation": {
+        "tabs": [
+            {
+                "tab": "Getting Started",
+                "groups": [
+                    {
+                        "group": "Introduction",
+                        "pages": [
+                            "introduction",
+                            "quickstart",
+                            "development",
+                            "documentation-contract",
+                            "architecture-overview",
+                            "concepts"
+                        ]
+                    }
+                ]
+            },
+            {
+                "tab": "Customer Docs",
+                "groups": [
+                    {
+                        "group": "Overview",
+                        "pages": [
+                            "customer/overview/what-is-materi",
+                            "customer/overview/key-features",
+                            "customer/overview/pricing",
+                            "customer/overview/use-cases"
+                        ]
+                    },
+                    {
+                        "group": "Getting Started",
+                        "pages": [
+                            "customer/getting-started/sign-up",
+                            "customer/getting-started/first-document",
+                            "customer/getting-started/invite-team",
+                            "customer/getting-started/workspace-setup"
+                        ]
+                    },
+                    {
+                        "group": "Document Management",
+                        "pages": [
+                            "customer/documents/creating-documents",
+                            "customer/documents/editing-documents",
+                            "customer/documents/organizing-documents",
+                            "customer/documents/sharing-documents",
+                            "customer/documents/version-history",
+                            "customer/documents/templates"
+                        ]
+                    },
+                    {
+                        "group": "Real-Time Collaboration",
+                        "pages": [
+                            "customer/collaboration/overview",
+                            "customer/collaboration/presence",
+                            "customer/collaboration/comments",
+                            "customer/collaboration/mentions",
+                            "customer/collaboration/conflict-resolution",
+                            "customer/collaboration/offline-mode"
+                        ]
+                    },
+                    {
+                        "group": "AI Features",
+                        "pages": [
+                            "customer/ai/overview",
+                            "customer/ai/content-generation",
+                            "customer/ai/summarization",
+                            "customer/ai/enhancement-suggestions",
+                            "customer/ai/code-analysis",
+                            "customer/ai/diagram-analysis",
+                            "customer/ai/safety-gates"
+                        ]
+                    },
+                    {
+                        "group": "Workspaces & Teams",
+                        "pages": [
+                            "customer/workspaces/creating-workspaces",
+                            "customer/workspaces/managing-members",
+                            "customer/workspaces/roles-permissions",
+                            "customer/workspaces/workspace-settings",
+                            "customer/workspaces/billing"
+                        ]
+                    },
+                    {
+                        "group": "Integrations",
+                        "pages": [
+                            "customer/integrations/overview",
+                            "customer/integrations/github",
+                            "customer/integrations/slack",
+                            "customer/integrations/google-drive",
+                            "customer/integrations/notion",
+                            "customer/integrations/webhooks"
+                        ]
+                    },
+                    {
+                        "group": "Security & Privacy",
+                        "pages": [
+                            "customer/security/overview",
+                            "customer/security/authentication",
+                            "customer/security/data-encryption",
+                            "customer/security/access-controls",
+                            "customer/security/audit-logs",
+                            "customer/security/gdpr-compliance"
+                        ]
+                    },
+                    {
+                        "group": "Support & Resources",
+                        "pages": [
+                            "customer/support/contact-support",
+                            "customer/support/faq",
+                            "customer/support/troubleshooting",
+                            "customer/support/keyboard-shortcuts",
+                            "customer/support/video-tutorials"
+                        ]
+                    }
+                ]
+            },
+            {
+                "tab": "Developer Guide",
+                "groups": [
+                    {
+                        "group": "Contributing",
+                        "pages": [
+                            "developer/contributing/overview",
+                            "developer/contributing/code-standards",
+                            "developer/contributing/git-workflow",
+                            "developer/contributing/pr-process",
+                            "developer/contributing/issue-templates",
+                            "developer/contributing/documentation"
+                        ]
+                    },
+                    {
+                        "group": "Introduction",
+                        "pages": [
+                            "developer/introduction/overview",
+                            "developer/introduction/architecture",
+                            "developer/introduction/tech-stack",
+                            "developer/introduction/getting-started"
+                        ]
+                    },
+                    {
+                        "group": "Recipes",
+                        "pages": [
+                            "developer/recipes/verify-webhook-signature",
+                            "developer/recipes/test-shield-github-actions-webhook",
+                            "developer/recipes/send-pipeline-metrics-webhook"
+                        ]
+                    },
+                    {
+                        "group": "Domain Services",
+                        "pages": [
+                            "developer/domain/api/overview",
+                            "developer/domain/api/architecture",
+                            "developer/domain/api/setup",
+                            "developer/domain/api/endpoints",
+                            "developer/domain/api/authentication",
+                            "developer/domain/api/rate-limiting",
+                            "developer/domain/api/testing",
+                            "developer/domain/api/deployment",
+                            "developer/domain/relay/overview",
+                            "developer/domain/relay/architecture",
+                            "developer/domain/relay/operational-transform",
+                            "developer/domain/relay/websocket-protocol",
+                            "developer/domain/relay/presence-tracking",
+                            "developer/domain/relay/testing",
+                            "developer/domain/relay/deployment",
+                            "developer/domain/shield/overview",
+                            "developer/domain/shield/architecture",
+                            "developer/domain/shield/authentication",
+                            "developer/domain/shield/authorization",
+                            "developer/domain/shield/user-management",
+                            "developer/domain/shield/oauth-saml",
+                            "developer/domain/shield/testing",
+                            "developer/domain/shield/deployment",
+                            "developer/domain/manuscript/overview",
+                            "developer/domain/manuscript/event-schemas",
+                            "developer/domain/manuscript/custom-options",
+                            "developer/domain/manuscript/code-generation",
+                            "developer/domain/manuscript/versioning",
+                            "developer/domain/manuscript/msx-inspector",
+                            "developer/domain/printery/overview",
+                            "developer/domain/printery/architecture",
+                            "developer/domain/printery/consumer-groups",
+                            "developer/domain/printery/handler-registry",
+                            "developer/domain/printery/resilience-patterns",
+                            "developer/domain/printery/deployment"
+                        ]
+                    },
+                    {
+                        "group": "Platform Services",
+                        "pages": [
+                            "developer/platform/aria/overview",
+                            "developer/platform/aria/architecture",
+                            "developer/platform/aria/text-analysis",
+                            "developer/platform/aria/code-safety",
+                            "developer/platform/aria/diagram-analysis",
+                            "developer/platform/aria/enhancement-suggestions",
+                            "developer/platform/aria/model-integration",
+                            "developer/platform/aria/graceful-degradation",
+                            "developer/platform/aria/testing",
+                            "developer/platform/aria/deployment",
+                            "developer/platform/intelligence/scribe",
+                            "developer/platform/intelligence/github-integrations",
+                            "developer/platform/intelligence/analytics"
+                        ]
+                    },
+                    {
+                        "group": "Products",
+                        "pages": [
+                            "developer/products/canvas/overview",
+                            "developer/products/canvas/architecture",
+                            "developer/products/canvas/setup",
+                            "developer/products/canvas/component-library",
+                            "developer/products/canvas/state-management",
+                            "developer/products/canvas/api-integration",
+                            "developer/products/canvas/real-time-sync",
+                            "developer/products/canvas/testing",
+                            "developer/products/canvas/storybook",
+                            "developer/products/canvas/deployment",
+                            "developer/products/atlas/overview",
+                            "developer/products/atlas/structure",
+                            "developer/products/atlas/contributing",
+                            "developer/products/atlas/mdx-components",
+                            "developer/products/specifications/overview",
+                            "developer/products/specifications/traceability",
+                            "developer/products/specifications/requirement-types",
+                            "developer/products/specifications/verification"
+                        ]
+                    },
+                    {
+                        "group": "Event-Driven Architecture",
+                        "pages": [
+                            "developer/events/overview",
+                            "developer/events/event-envelope",
+                            "developer/events/redis-streams",
+                            "developer/events/publishing",
+                            "developer/events/consuming",
+                            "developer/events/idempotency",
+                            "developer/events/retry-patterns",
+                            "developer/events/dead-letter-queue"
+                        ]
+                    },
+                    {
+                        "group": "Testing",
+                        "pages": [
+                            "developer/testing/overview",
+                            "developer/testing/unit-tests",
+                            "developer/testing/integration-tests",
+                            "developer/testing/e2e-tests",
+                            "developer/testing/load-tests",
+                            "developer/testing/contract-tests",
+                            "developer/testing/chaos-engineering"
+                        ]
+                    },
+                    {
+                        "group": "Operations",
+                        "pages": [
+                            "developer/operations/infrastructure/overview",
+                            "developer/operations/infrastructure/terraform",
+                            "developer/operations/infrastructure/kubernetes",
+                            "developer/operations/infrastructure/networking",
+                            "developer/operations/infrastructure/security",
+                            "developer/operations/deployment/overview",
+                            "developer/operations/deployment/gitops",
+                            "developer/operations/deployment/ci-cd",
+                            "developer/operations/deployment/blue-green",
+                            "developer/operations/deployment/rollback",
+                            "developer/operations/folio/overview",
+                            "developer/operations/folio/metrics",
+                            "developer/operations/folio/logging",
+                            "developer/operations/folio/tracing",
+                            "developer/operations/folio/alerting",
+                            "developer/operations/folio/dashboards",
+                            "developer/operations/runbooks/incident-response",
+                            "developer/operations/runbooks/scaling",
+                            "developer/operations/runbooks/backup-restore",
+                            "developer/operations/runbooks/disaster-recovery"
+                        ]
+                    }
+                ]
+            },
+            {
+                "tab": "API Reference",
+                "groups": [
+                    {
+                        "group": "Introduction",
+                        "pages": [
+                            "api/introduction/overview",
+                            "api/introduction/authentication",
+                            "api/introduction/rate-limits",
+                            "api/introduction/errors",
+                            "api/introduction/pagination",
+                            "api/introduction/versioning",
+                            "api/introduction/webhooks"
+                        ]
+                    },
+                    {
+                        "group": "REST API - Authentication",
+                        "pages": [
+                            "api/rest/auth/login",
+                            "api/rest/auth/logout",
+                            "api/rest/auth/refresh-token",
+                            "api/rest/auth/oauth",
+                            "api/rest/auth/saml"
+                        ]
+                    },
+                    {
+                        "group": "REST API - Users",
+                        "pages": [
+                            "api/rest/users/get-user",
+                            "api/rest/users/update-user",
+                            "api/rest/users/delete-user",
+                            "api/rest/users/list-users",
+                            "api/rest/users/user-preferences"
+                        ]
+                    },
+                    {
+                        "group": "REST API - Documents",
+                        "pages": [
+                            "api/rest/documents/create-document",
+                            "api/rest/documents/get-document",
+                            "api/rest/documents/update-document",
+                            "api/rest/documents/delete-document",
+                            "api/rest/documents/list-documents",
+                            "api/rest/documents/document-versions",
+                            "api/rest/documents/document-permissions"
+                        ]
+                    },
+                    {
+                        "group": "REST API - Workspaces",
+                        "pages": [
+                            "api/rest/workspaces/create-workspace",
+                            "api/rest/workspaces/get-workspace",
+                            "api/rest/workspaces/update-workspace",
+                            "api/rest/workspaces/delete-workspace",
+                            "api/rest/workspaces/list-workspaces",
+                            "api/rest/workspaces/workspace-members",
+                            "api/rest/workspaces/workspace-roles"
+                        ]
+                    },
+                    {
+                        "group": "REST API - Collaboration",
+                        "pages": [
+                            "api/rest/collaboration/get-session",
+                            "api/rest/collaboration/list-sessions",
+                            "api/rest/collaboration/get-presence",
+                            "api/rest/collaboration/comments",
+                            "api/rest/collaboration/mentions"
+                        ]
+                    },
+                    {
+                        "group": "REST API - AI Features",
+                        "pages": [
+                            "api/rest/ai/analyze-text",
+                            "api/rest/ai/analyze-code",
+                            "api/rest/ai/analyze-diagram",
+                            "api/rest/ai/generate-content",
+                            "api/rest/ai/enhance-content",
+                            "api/rest/ai/summarize"
+                        ]
+                    },
+                    {
+                        "group": "REST API - Files",
+                        "pages": [
+                            "api/rest/files/upload-file",
+                            "api/rest/files/get-file",
+                            "api/rest/files/delete-file",
+                            "api/rest/files/list-files"
+                        ]
+                    },
+                    {
+                        "group": "REST API - Search",
+                        "pages": [
+                            "api/rest/search/search-documents",
+                            "api/rest/search/search-users",
+                            "api/rest/search/search-workspaces"
+                        ]
+                    },
+                    {
+                        "group": "WebSocket API",
+                        "pages": [
+                            "api/websocket/overview",
+                            "api/websocket/connection",
+                            "api/websocket/authentication",
+                            "api/websocket/operations",
+                            "api/websocket/presence",
+                            "api/websocket/events",
+                            "api/websocket/error-handling"
+                        ]
+                    },
+                    {
+                        "group": "GraphQL API (Beta)",
+                        "pages": [
+                            "api/graphql/overview",
+                            "api/graphql/schema",
+                            "api/graphql/queries",
+                            "api/graphql/mutations",
+                            "api/graphql/subscriptions"
+                        ]
+                    },
+                    {
+                        "group": "SDKs",
+                        "pages": [
+                            "api/sdks/overview",
+                            "api/sdks/javascript-typescript",
+                            "api/sdks/python",
+                            "api/sdks/go",
+                            "api/sdks/rust",
+                            "api/sdks/java"
+                        ]
+                    },
+                    {
+                        "group": "Event Schemas",
+                        "pages": [
+                            "api/events/overview",
+                            "api/events/user-events",
+                            "api/events/document-events",
+                            "api/events/collaboration-events",
+                            "api/events/workspace-events",
+                            "api/events/aria-events",
+                            "api/events/notification-events",
+                            "api/events/audit-events"
+                        ]
+                    }
+                ]
+            },
+            {
+                "tab": "Enterprise",
+                "groups": [
+                    {
+                        "group": "Overview",
+                        "pages": [
+                            "enterprise/overview/what-is-enterprise",
+                            "enterprise/overview/feature-comparison",
+                            "enterprise/overview/pricing",
+                            "enterprise/overview/sla"
+                        ]
+                    },
+                    {
+                        "group": "Deployment - Self-Hosted",
+                        "pages": [
+                            "enterprise/deployment/self-hosted/overview",
+                            "enterprise/deployment/self-hosted/requirements",
+                            "enterprise/deployment/self-hosted/kubernetes",
+                            "enterprise/deployment/self-hosted/docker-compose",
+                            "enterprise/deployment/self-hosted/configuration",
+                            "enterprise/deployment/self-hosted/upgrading",
+                            "enterprise/deployment/self-hosted/backup-restore"
+                        ]
+                    },
+                    {
+                        "group": "Deployment - Cloud Dedicated",
+                        "pages": [
+                            "enterprise/deployment/cloud-dedicated/overview",
+                            "enterprise/deployment/cloud-dedicated/provisioning",
+                            "enterprise/deployment/cloud-dedicated/vpc-peering",
+                            "enterprise/deployment/cloud-dedicated/custom-domains",
+                            "enterprise/deployment/cloud-dedicated/monitoring"
+                        ]
+                    },
+                    {
+                        "group": "Deployment - Hybrid",
+                        "pages": [
+                            "enterprise/deployment/hybrid/overview",
+                            "enterprise/deployment/hybrid/architecture",
+                            "enterprise/deployment/hybrid/data-residency",
+                            "enterprise/deployment/hybrid/compliance"
+                        ]
+                    },
+                    {
+                        "group": "Security & Compliance",
+                        "pages": [
+                            "enterprise/security/overview",
+                            "enterprise/security/authentication",
+                            "enterprise/security/sso-saml",
+                            "enterprise/security/scim-provisioning",
+                            "enterprise/security/encryption",
+                            "enterprise/security/network-security",
+                            "enterprise/security/audit-logs",
+                            "enterprise/security/data-residency",
+                            "enterprise/security/compliance-certifications",
+                            "enterprise/security/penetration-testing",
+                            "enterprise/security/vulnerability-disclosure"
+                        ]
+                    },
+                    {
+                        "group": "Administration",
+                        "pages": [
+                            "enterprise/admin/overview",
+                            "enterprise/admin/user-management",
+                            "enterprise/admin/workspace-management",
+                            "enterprise/admin/license-management",
+                            "enterprise/admin/usage-analytics",
+                            "enterprise/admin/billing",
+                            "enterprise/admin/support"
+                        ]
+                    },
+                    {
+                        "group": "Integration",
+                        "pages": [
+                            "enterprise/integration/overview",
+                            "enterprise/integration/ldap-ad",
+                            "enterprise/integration/okta",
+                            "enterprise/integration/azure-ad",
+                            "enterprise/integration/google-workspace",
+                            "enterprise/integration/custom-sso",
+                            "enterprise/integration/api-gateway",
+                            "enterprise/integration/webhooks"
+                        ]
+                    },
+                    {
+                        "group": "Monitoring & Operations",
+                        "pages": [
+                            "enterprise/monitoring/overview",
+                            "enterprise/monitoring/health-checks",
+                            "enterprise/monitoring/metrics",
+                            "enterprise/monitoring/logging",
+                            "enterprise/monitoring/alerting",
+                            "enterprise/monitoring/performance-tuning",
+                            "enterprise/monitoring/capacity-planning"
+                        ]
+                    },
+                    {
+                        "group": "High Availability",
+                        "pages": [
+                            "enterprise/ha/overview",
+                            "enterprise/ha/architecture",
+                            "enterprise/ha/failover",
+                            "enterprise/ha/load-balancing",
+                            "enterprise/ha/disaster-recovery",
+                            "enterprise/ha/backup-strategy"
+                        ]
+                    },
+                    {
+                        "group": "Scalability",
+                        "pages": [
+                            "enterprise/scalability/overview",
+                            "enterprise/scalability/horizontal-scaling",
+                            "enterprise/scalability/database-scaling",
+                            "enterprise/scalability/cache-strategy",
+                            "enterprise/scalability/cdn-configuration",
+                            "enterprise/scalability/performance-benchmarks"
+                        ]
+                    },
+                    {
+                        "group": "Migration",
+                        "pages": [
+                            "enterprise/migration/overview",
+                            "enterprise/migration/from-cloud",
+                            "enterprise/migration/from-competitors",
+                            "enterprise/migration/data-import",
+                            "enterprise/migration/user-migration",
+                            "enterprise/migration/validation"
+                        ]
+                    },
+                    {
+                        "group": "Support",
+                        "pages": [
+                            "enterprise/support/overview",
+                            "enterprise/support/support-tiers",
+                            "enterprise/support/contact",
+                            "enterprise/support/sla",
+                            "enterprise/support/escalation",
+                            "enterprise/support/training"
+                        ]
+                    }
+                ]
+            },
+            {
+                "tab": "Internal (Staff)",
+                "groups": [
+                    {
+                        "group": "Overview",
+                        "pages": [
+                            "internal/overview/welcome",
+                            "internal/overview/team-structure",
+                            "internal/overview/communication",
+                            "internal/overview/tools"
+                        ]
+                    },
+                    {
+                        "group": "Architecture - System Design",
+                        "pages": [
+                            "internal/architecture/system-design/overview",
+                            "internal/architecture/system-design/domain-services",
+                            "internal/architecture/system-design/platform-services",
+                            "internal/architecture/system-design/product-architecture",
+                            "internal/architecture/system-design/operations-architecture",
+                            "internal/architecture/system-design/cross-segment-integration",
+                            "internal/architecture/system-design/event-driven-architecture",
+                            "internal/architecture/system-design/data-models"
+                        ]
+                    },
+                    {
+                        "group": "Architecture - ADRs",
+                        "pages": [
+                            "internal/architecture/adrs/overview",
+                            "internal/architecture/adrs/adr-001-microservices-architecture",
+                            "internal/architecture/adrs/adr-002-event-driven-communication",
+                            "internal/architecture/adrs/adr-003-operational-transform",
+                            "internal/architecture/adrs/adr-004-protocol-buffers",
+                            "internal/architecture/adrs/adr-005-redis-streams",
+                            "internal/architecture/adrs/adr-006-polyglot-services",
+                            "internal/architecture/adrs/adr-007-graceful-degradation"
+                        ]
+                    },
+                    {
+                        "group": "Architecture - Technical Specs",
+                        "pages": [
+                            "internal/architecture/specs/l1-strategic-specs",
+                            "internal/architecture/specs/l2-tactical-specs",
+                            "internal/architecture/specs/requirement-traceability",
+                            "internal/architecture/specs/verification-matrix"
+                        ]
+                    },
+                    {
+                        "group": "Engineering - Workflow",
+                        "pages": [
+                            "internal/engineering/workflow/overview",
+                            "internal/engineering/workflow/issue-templates",
+                            "internal/engineering/workflow/pr-process",
+                            "internal/engineering/workflow/code-review",
+                            "internal/engineering/workflow/testing-strategy",
+                            "internal/engineering/workflow/deployment-process"
+                        ]
+                    },
+                    {
+                        "group": "Engineering - Standards",
+                        "pages": [
+                            "internal/engineering/standards/overview",
+                            "internal/engineering/standards/go-standards",
+                            "internal/engineering/standards/rust-standards",
+                            "internal/engineering/standards/python-standards",
+                            "internal/engineering/standards/typescript-standards",
+                            "internal/engineering/standards/proto-standards"
+                        ]
+                    },
+                    {
+                        "group": "Engineering - Ownership",
+                        "pages": [
+                            "internal/engineering/ownership/overview",
+                            "internal/engineering/ownership/domain-team",
+                            "internal/engineering/ownership/platform-team",
+                            "internal/engineering/ownership/product-team",
+                            "internal/engineering/ownership/operations-team",
+                            "internal/engineering/ownership/on-call-rotation"
+                        ]
+                    },
+                    {
+                        "group": "Engineering - Performance",
+                        "pages": [
+                            "internal/engineering/performance/overview",
+                            "internal/engineering/performance/benchmarking",
+                            "internal/engineering/performance/profiling",
+                            "internal/engineering/performance/optimization-guide",
+                            "internal/engineering/performance/slo-sli-sla"
+                        ]
+                    },
+                    {
+                        "group": "Operations - Incidents",
+                        "pages": [
+                            "internal/operations/incidents/overview",
+                            "internal/operations/incidents/severity-levels",
+                            "internal/operations/incidents/response-process",
+                            "internal/operations/incidents/communication",
+                            "internal/operations/incidents/post-mortems",
+                            "internal/operations/incidents/blameless-culture"
+                        ]
+                    },
+                    {
+                        "group": "Operations - Releases",
+                        "pages": [
+                            "internal/operations/releases/overview",
+                            "internal/operations/releases/versioning",
+                            "internal/operations/releases/release-process",
+                            "internal/operations/releases/rollback-procedures",
+                            "internal/operations/releases/change-management"
+                        ]
+                    },
+                    {
+                        "group": "Operations - Capacity",
+                        "pages": [
+                            "internal/operations/capacity/overview",
+                            "internal/operations/capacity/metrics",
+                            "internal/operations/capacity/forecasting",
+                            "internal/operations/capacity/scaling-strategy"
+                        ]
+                    },
+                    {
+                        "group": "Operations - Cost",
+                        "pages": [
+                            "internal/operations/cost/overview",
+                            "internal/operations/cost/tracking",
+                            "internal/operations/cost/optimization",
+                            "internal/operations/cost/budgeting"
+                        ]
+                    },
+                    {
+                        "group": "Product - Strategy",
+                        "pages": [
+                            "internal/product/strategy/vision",
+                            "internal/product/strategy/roadmap",
+                            "internal/product/strategy/okrs",
+                            "internal/product/strategy/competitive-analysis"
+                        ]
+                    },
+                    {
+                        "group": "Product - Development",
+                        "pages": [
+                            "internal/product/development/discovery",
+                            "internal/product/development/planning",
+                            "internal/product/development/execution",
+                            "internal/product/development/launch"
+                        ]
+                    },
+                    {
+                        "group": "Product - Research",
+                        "pages": [
+                            "internal/product/research/overview",
+                            "internal/product/research/user-personas",
+                            "internal/product/research/interviews",
+                            "internal/product/research/surveys",
+                            "internal/product/research/analytics"
+                        ]
+                    },
+                    {
+                        "group": "Security - Practices",
+                        "pages": [
+                            "internal/security/practices/overview",
+                            "internal/security/practices/threat-modeling",
+                            "internal/security/practices/secure-coding",
+                            "internal/security/practices/code-review-security",
+                            "internal/security/practices/dependency-management",
+                            "internal/security/practices/secrets-management"
+                        ]
+                    },
+                    {
+                        "group": "Security - Vulnerabilities",
+                        "pages": [
+                            "internal/security/vulnerabilities/overview",
+                            "internal/security/vulnerabilities/scanning",
+                            "internal/security/vulnerabilities/reporting",
+                            "internal/security/vulnerabilities/remediation",
+                            "internal/security/vulnerabilities/disclosure"
+                        ]
+                    },
+                    {
+                        "group": "Security - Compliance",
+                        "pages": [
+                            "internal/security/compliance/overview",
+                            "internal/security/compliance/soc2",
+                            "internal/security/compliance/gdpr",
+                            "internal/security/compliance/hipaa",
+                            "internal/security/compliance/iso27001"
+                        ]
+                    },
+                    {
+                        "group": "Data & Analytics",
+                        "pages": [
+                            "internal/analytics/overview",
+                            "internal/analytics/metrics-dashboard",
+                            "internal/analytics/user-analytics",
+                            "internal/analytics/system-analytics",
+                            "internal/analytics/business-intelligence"
+                        ]
+                    },
+                    {
+                        "group": "HR & Culture",
+                        "pages": [
+                            "internal/hr/onboarding",
+                            "internal/hr/engineering-levels",
+                            "internal/hr/performance-reviews",
+                            "internal/hr/compensation",
+                            "internal/hr/benefits",
+                            "internal/hr/remote-work"
+                        ]
+                    },
+                    {
+                        "group": "Legal & Finance",
+                        "pages": [
+                            "internal/legal/contracts",
+                            "internal/legal/intellectual-property",
+                            "internal/legal/privacy-policy",
+                            "internal/legal/terms-of-service",
+                            "internal/finance/budget",
+                            "internal/finance/expense-policy"
+                        ]
+                    }
+                ]
+            }
+        ],
+        "global": {
+            "anchors": [
+                {
+                    "anchor": "Community",
+                    "href": "https://discord.gg/materi",
+                    "icon": "discord"
+                },
+                {
+                    "anchor": "GitHub",
+                    "href": "https://github.com/materi-ai",
+                    "icon": "github"
+                },
+                {
+                    "anchor": "Blog",
+                    "href": "https://materi.com/blog",
+                    "icon": "newspaper"
+                },
+                {
+                    "anchor": "Changelog",
+                    "href": "https://materi.com/changelog",
+                    "icon": "list"
+                }
             ]
-          },
-          {
-            "group": "Customization",
-            "pages": [
-              "essentials/settings",
-              "essentials/navigation"
-            ]
-          },
-          {
-            "group": "Writing content",
-            "pages": [
-              "essentials/markdown",
-              "essentials/code",
-              "essentials/images",
-              "essentials/reusable-snippets"
-            ]
-          },
-          {
-            "group": "AI tools",
-            "pages": [
-              "ai-tools/cursor",
-              "ai-tools/claude-code",
-              "ai-tools/windsurf"
-            ]
-          }
-        ]
-      },
-      {
-        "tab": "API reference",
-        "groups": [
-          {
-            "group": "API documentation",
-            "pages": [
-              "api-reference/introduction"
-            ]
-          },
-          {
-            "group": "Endpoint examples",
-            "pages": [
-              "api-reference/endpoint/get",
-              "api-reference/endpoint/create",
-              "api-reference/endpoint/delete",
-              "api-reference/endpoint/webhook"
-            ]
-          }
-        ]
-      }
-    ],
-    "global": {
-      "anchors": [
+        }
+    },
+    "contextual": {
+        "options": ["copy", "view", "chatgpt", "claude", "perplexity", "mcp", "cursor", "vscode"]
+    },
+    "footer": {
+        "socials": {
+            "x": "https://twitter.com/materi",
+            "github": "https://github.com/materi-ai",
+            "linkedin": "https://linkedin.com/company/materi",
+            "discord": "https://discord.gg/materi"
+        }
+    },
+    "redirects": [
         {
-          "anchor": "Documentation",
-          "href": "https://mintlify.com/docs",
-          "icon": "book-open-cover"
+            "source": "/docs",
+            "destination": "/introduction"
         },
         {
-          "anchor": "Blog",
-          "href": "https://mintlify.com/blog",
-          "icon": "newspaper"
+            "source": "/getting-started",
+            "destination": "/quickstart"
         }
-      ]
-    }
-  },
-  "logo": {
-    "light": "/logo/light.svg",
-    "dark": "/logo/dark.svg"
-  },
-  "navbar": {
-    "links": [
-      {
-        "label": "Support",
-        "href": "mailto:hi@mintlify.com"
-      }
-    ],
-    "primary": {
-      "type": "button",
-      "label": "Dashboard",
-      "href": "https://dashboard.mintlify.com"
-    }
-  },
-  "contextual": {
-    "options": [
-     "copy",
-     "view",
-     "chatgpt",
-     "claude",
-     "perplexity",
-     "mcp",
-     "cursor",
-     "vscode"
-   ]
-  },
-  "footer": {
-    "socials": {
-      "x": "https://x.com/mintlify",
-      "github": "https://github.com/mintlify",
-      "linkedin": "https://linkedin.com/company/mintlify"
-    }
-  }
+    ]
 }

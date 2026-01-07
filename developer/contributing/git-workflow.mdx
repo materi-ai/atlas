@@ -1,0 +1,38 @@
+---
+title: 'Git workflow'
+description: 'A disciplined flow for multi-service changes'
+---
+
+Use a workflow that keeps changes traceable and easy to revert.
+
+If you’re touching both code and docs, keep them in the same PR so history remains coherent and a
+revert doesn’t strand incorrect documentation.
+
+## Branching
+
+-   Create a short-lived branch per change.
+-   Prefer feature branches that map to a single intent (bug fix, refactor, doc update).
+
+## Commits
+
+-   Make commits atomic (one logical change).
+-   Include enough context to understand why the change exists.
+
+If you’re making a multi-step change (contract → implementation → docs), consider a commit per step.
+
+## Cross-service changes
+
+If a PR touches multiple services:
+
+-   Start from the contract (OpenAPI/proto/events) and drive implementation from that.
+-   Include a short “impact summary” in the PR description listing:
+    -   affected services
+    -   contract changes (OpenAPI, events)
+    -   migrations/ops changes (if any)
+
+## Keeping specs and docs in sync
+
+From `platform/atlas`:
+
+-   Run `python3 scripts/sync_reference.py --check` before requesting review.
+-   If the check fails, regenerate with `python3 scripts/sync_reference.py` and commit the outputs.
