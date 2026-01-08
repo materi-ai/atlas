@@ -6,7 +6,11 @@
     "colors": {
         "primary": "#4A90E2",
         "light": "#7B68EE",
-        "dark": "#2E5C8A"
+        "dark": "#2E5C8A",
+        "background": {
+            "light": "#FAFBFC",
+            "dark": "#0D1117"
+        }
     },
     "favicon": "/favicon.svg",
     "logo": {
@@ -14,10 +18,33 @@
         "dark": "/logo/dark.svg",
         "href": "https://materi.com"
     },
+    "modeToggle": {
+        "default": "system",
+        "isHidden": false
+    },
+    "topbar": {
+        "style": "gradient"
+    },
+    "search": {
+        "prompt": "Search documentation..."
+    },
+    "feedback": {
+        "thumbsRating": true,
+        "suggestEdit": true,
+        "raiseIssue": true
+    },
+    "analytics": {
+        "posthog": {
+            "apiKey": "POSTHOG_API_KEY"
+        }
+    },
+    "seo": {
+        "indexHiddenPages": false
+    },
     "navbar": {
         "links": [
             {
-                "label": "Customer Portal",
+                "label": "Canvas",
                 "href": "https://app.materi.com"
             },
             {
@@ -27,11 +54,15 @@
             {
                 "label": "Status",
                 "href": "https://status.materi.com"
+            },
+            {
+                "label": "Changelog",
+                "href": "https://materi.com/changelog"
             }
         ],
         "primary": {
             "type": "button",
-            "label": "Get Started",
+            "label": "Get Started Free",
             "href": "https://app.materi.com/signup"
         }
     },
@@ -42,13 +73,32 @@
                 "groups": [
                     {
                         "group": "Introduction",
+                        "icon": "rocket",
                         "pages": [
+                            "index",
                             "introduction",
                             "quickstart",
+                            "concepts",
+                            "architecture-overview"
+                        ]
+                    },
+                    {
+                        "group": "Platform Essentials",
+                        "icon": "book",
+                        "pages": [
                             "development",
-                            "documentation-contract",
-                            "architecture-overview",
-                            "concepts"
+                            "documentation-contract"
+                        ]
+                    },
+                    {
+                        "group": "MFlow Guides",
+                        "icon": "graduation-cap",
+                        "pages": [
+                            "mflow/01-mflow-architecture-guide",
+                            "mflow/02-environment-setup-railway",
+                            "mflow/03-folio-observability-guide",
+                            "mflow/04-forge-event-schema-reference",
+                            "mflow/05-development-workflow-resources"
                         ]
                     }
                 ]
@@ -58,24 +108,27 @@
                 "groups": [
                     {
                         "group": "Overview",
+                        "icon": "sparkles",
                         "pages": [
                             "customer/overview/what-is-materi",
                             "customer/overview/key-features",
-                            "customer/overview/pricing",
-                            "customer/overview/use-cases"
+                            "customer/overview/use-cases",
+                            "customer/overview/pricing"
                         ]
                     },
                     {
                         "group": "Getting Started",
+                        "icon": "flag-checkered",
                         "pages": [
                             "customer/getting-started/sign-up",
                             "customer/getting-started/first-document",
-                            "customer/getting-started/invite-team",
-                            "customer/getting-started/workspace-setup"
+                            "customer/getting-started/workspace-setup",
+                            "customer/getting-started/invite-team"
                         ]
                     },
                     {
                         "group": "Document Management",
+                        "icon": "file-lines",
                         "pages": [
                             "customer/documents/creating-documents",
                             "customer/documents/editing-documents",
@@ -86,7 +139,19 @@
                         ]
                     },
                     {
+                        "group": "Workspaces & Teams",
+                        "icon": "building",
+                        "pages": [
+                            "customer/workspaces/creating-workspaces",
+                            "customer/workspaces/managing-members",
+                            "customer/workspaces/roles-permissions",
+                            "customer/workspaces/workspace-settings",
+                            "customer/workspaces/billing"
+                        ]
+                    },
+                    {
                         "group": "Real-Time Collaboration",
+                        "icon": "users",
                         "pages": [
                             "customer/collaboration/overview",
                             "customer/collaboration/presence",
@@ -98,6 +163,7 @@
                     },
                     {
                         "group": "AI Features",
+                        "icon": "wand-magic-sparkles",
                         "pages": [
                             "customer/ai/overview",
                             "customer/ai/content-generation",
@@ -109,17 +175,8 @@
                         ]
                     },
                     {
-                        "group": "Workspaces & Teams",
-                        "pages": [
-                            "customer/workspaces/creating-workspaces",
-                            "customer/workspaces/managing-members",
-                            "customer/workspaces/roles-permissions",
-                            "customer/workspaces/workspace-settings",
-                            "customer/workspaces/billing"
-                        ]
-                    },
-                    {
                         "group": "Integrations",
+                        "icon": "plug",
                         "pages": [
                             "customer/integrations/overview",
                             "customer/integrations/github",
@@ -131,6 +188,7 @@
                     },
                     {
                         "group": "Security & Privacy",
+                        "icon": "shield-halved",
                         "pages": [
                             "customer/security/overview",
                             "customer/security/authentication",
@@ -142,6 +200,7 @@
                     },
                     {
                         "group": "Support & Resources",
+                        "icon": "headset",
                         "pages": [
                             "customer/support/contact-support",
                             "customer/support/faq",
@@ -156,7 +215,18 @@
                 "tab": "Developer Guide",
                 "groups": [
                     {
+                        "group": "Getting Started",
+                        "icon": "code",
+                        "pages": [
+                            "developer/introduction/overview",
+                            "developer/introduction/architecture",
+                            "developer/introduction/tech-stack",
+                            "developer/introduction/getting-started"
+                        ]
+                    },
+                    {
                         "group": "Contributing",
+                        "icon": "code-pull-request",
                         "pages": [
                             "developer/contributing/overview",
                             "developer/contributing/code-standards",
@@ -167,16 +237,8 @@
                         ]
                     },
                     {
-                        "group": "Introduction",
-                        "pages": [
-                            "developer/introduction/overview",
-                            "developer/introduction/architecture",
-                            "developer/introduction/tech-stack",
-                            "developer/introduction/getting-started"
-                        ]
-                    },
-                    {
-                        "group": "Recipes",
+                        "group": "Developer Recipes",
+                        "icon": "flask",
                         "pages": [
                             "developer/recipes/verify-webhook-signature",
                             "developer/recipes/test-shield-github-actions-webhook",
@@ -184,7 +246,8 @@
                         ]
                     },
                     {
-                        "group": "Domain Services",
+                        "group": "Domain Services - API",
+                        "icon": "server",
                         "pages": [
                             "developer/domain/api/overview",
                             "developer/domain/api/architecture",
@@ -193,14 +256,26 @@
                             "developer/domain/api/authentication",
                             "developer/domain/api/rate-limiting",
                             "developer/domain/api/testing",
-                            "developer/domain/api/deployment",
+                            "developer/domain/api/deployment"
+                        ]
+                    },
+                    {
+                        "group": "Domain Services - Relay",
+                        "icon": "bolt",
+                        "pages": [
                             "developer/domain/relay/overview",
                             "developer/domain/relay/architecture",
                             "developer/domain/relay/operational-transform",
                             "developer/domain/relay/websocket-protocol",
                             "developer/domain/relay/presence-tracking",
                             "developer/domain/relay/testing",
-                            "developer/domain/relay/deployment",
+                            "developer/domain/relay/deployment"
+                        ]
+                    },
+                    {
+                        "group": "Domain Services - Shield",
+                        "icon": "shield",
+                        "pages": [
                             "developer/domain/shield/overview",
                             "developer/domain/shield/architecture",
                             "developer/domain/shield/authentication",
@@ -208,13 +283,25 @@
                             "developer/domain/shield/user-management",
                             "developer/domain/shield/oauth-saml",
                             "developer/domain/shield/testing",
-                            "developer/domain/shield/deployment",
+                            "developer/domain/shield/deployment"
+                        ]
+                    },
+                    {
+                        "group": "Domain Services - Manuscript",
+                        "icon": "scroll",
+                        "pages": [
                             "developer/domain/manuscript/overview",
                             "developer/domain/manuscript/event-schemas",
                             "developer/domain/manuscript/custom-options",
                             "developer/domain/manuscript/code-generation",
                             "developer/domain/manuscript/versioning",
-                            "developer/domain/manuscript/msx-inspector",
+                            "developer/domain/manuscript/msx-inspector"
+                        ]
+                    },
+                    {
+                        "group": "Domain Services - Printery",
+                        "icon": "print",
+                        "pages": [
                             "developer/domain/printery/overview",
                             "developer/domain/printery/architecture",
                             "developer/domain/printery/consumer-groups",
@@ -224,7 +311,8 @@
                         ]
                     },
                     {
-                        "group": "Platform Services",
+                        "group": "Platform Services - Aria AI",
+                        "icon": "brain",
                         "pages": [
                             "developer/platform/aria/overview",
                             "developer/platform/aria/architecture",
@@ -235,14 +323,21 @@
                             "developer/platform/aria/model-integration",
                             "developer/platform/aria/graceful-degradation",
                             "developer/platform/aria/testing",
-                            "developer/platform/aria/deployment",
+                            "developer/platform/aria/deployment"
+                        ]
+                    },
+                    {
+                        "group": "Platform Services - Intelligence",
+                        "icon": "lightbulb",
+                        "pages": [
                             "developer/platform/intelligence/scribe",
                             "developer/platform/intelligence/github-integrations",
                             "developer/platform/intelligence/analytics"
                         ]
                     },
                     {
-                        "group": "Products",
+                        "group": "Products - Canvas",
+                        "icon": "palette",
                         "pages": [
                             "developer/products/canvas/overview",
                             "developer/products/canvas/architecture",
@@ -253,11 +348,23 @@
                             "developer/products/canvas/real-time-sync",
                             "developer/products/canvas/testing",
                             "developer/products/canvas/storybook",
-                            "developer/products/canvas/deployment",
+                            "developer/products/canvas/deployment"
+                        ]
+                    },
+                    {
+                        "group": "Products - Atlas Docs",
+                        "icon": "book-open",
+                        "pages": [
                             "developer/products/atlas/overview",
                             "developer/products/atlas/structure",
                             "developer/products/atlas/contributing",
-                            "developer/products/atlas/mdx-components",
+                            "developer/products/atlas/mdx-components"
+                        ]
+                    },
+                    {
+                        "group": "Products - Specifications",
+                        "icon": "clipboard-check",
+                        "pages": [
                             "developer/products/specifications/overview",
                             "developer/products/specifications/traceability",
                             "developer/products/specifications/requirement-types",
@@ -266,6 +373,7 @@
                     },
                     {
                         "group": "Event-Driven Architecture",
+                        "icon": "diagram-project",
                         "pages": [
                             "developer/events/overview",
                             "developer/events/event-envelope",
@@ -279,6 +387,7 @@
                     },
                     {
                         "group": "Testing",
+                        "icon": "vial",
                         "pages": [
                             "developer/testing/overview",
                             "developer/testing/unit-tests",
@@ -290,24 +399,43 @@
                         ]
                     },
                     {
-                        "group": "Operations",
+                        "group": "Operations - Infrastructure",
+                        "icon": "cloud",
                         "pages": [
                             "developer/operations/infrastructure/overview",
                             "developer/operations/infrastructure/terraform",
                             "developer/operations/infrastructure/kubernetes",
                             "developer/operations/infrastructure/networking",
-                            "developer/operations/infrastructure/security",
+                            "developer/operations/infrastructure/security"
+                        ]
+                    },
+                    {
+                        "group": "Operations - Deployment",
+                        "icon": "rocket",
+                        "pages": [
                             "developer/operations/deployment/overview",
                             "developer/operations/deployment/gitops",
                             "developer/operations/deployment/ci-cd",
                             "developer/operations/deployment/blue-green",
-                            "developer/operations/deployment/rollback",
+                            "developer/operations/deployment/rollback"
+                        ]
+                    },
+                    {
+                        "group": "Operations - Folio Observability",
+                        "icon": "chart-line",
+                        "pages": [
                             "developer/operations/folio/overview",
                             "developer/operations/folio/metrics",
                             "developer/operations/folio/logging",
                             "developer/operations/folio/tracing",
                             "developer/operations/folio/alerting",
-                            "developer/operations/folio/dashboards",
+                            "developer/operations/folio/dashboards"
+                        ]
+                    },
+                    {
+                        "group": "Operations - Runbooks",
+                        "icon": "book",
+                        "pages": [
                             "developer/operations/runbooks/incident-response",
                             "developer/operations/runbooks/scaling",
                             "developer/operations/runbooks/backup-restore",
@@ -321,6 +449,7 @@
                 "groups": [
                     {
                         "group": "Introduction",
+                        "icon": "circle-info",
                         "pages": [
                             "api/introduction/overview",
                             "api/introduction/authentication",
@@ -333,6 +462,7 @@
                     },
                     {
                         "group": "REST API - Authentication",
+                        "icon": "key",
                         "pages": [
                             "api/rest/auth/login",
                             "api/rest/auth/logout",
@@ -343,6 +473,7 @@
                     },
                     {
                         "group": "REST API - Users",
+                        "icon": "user",
                         "pages": [
                             "api/rest/users/get-user",
                             "api/rest/users/update-user",
@@ -353,6 +484,7 @@
                     },
                     {
                         "group": "REST API - Documents",
+                        "icon": "file",
                         "pages": [
                             "api/rest/documents/create-document",
                             "api/rest/documents/get-document",
@@ -365,6 +497,7 @@
                     },
                     {
                         "group": "REST API - Workspaces",
+                        "icon": "folder",
                         "pages": [
                             "api/rest/workspaces/create-workspace",
                             "api/rest/workspaces/get-workspace",
@@ -377,6 +510,7 @@
                     },
                     {
                         "group": "REST API - Collaboration",
+                        "icon": "comments",
                         "pages": [
                             "api/rest/collaboration/get-session",
                             "api/rest/collaboration/list-sessions",
@@ -387,6 +521,7 @@
                     },
                     {
                         "group": "REST API - AI Features",
+                        "icon": "wand-magic-sparkles",
                         "pages": [
                             "api/rest/ai/analyze-text",
                             "api/rest/ai/analyze-code",
@@ -398,6 +533,7 @@
                     },
                     {
                         "group": "REST API - Files",
+                        "icon": "paperclip",
                         "pages": [
                             "api/rest/files/upload-file",
                             "api/rest/files/get-file",
@@ -407,6 +543,7 @@
                     },
                     {
                         "group": "REST API - Search",
+                        "icon": "magnifying-glass",
                         "pages": [
                             "api/rest/search/search-documents",
                             "api/rest/search/search-users",
@@ -415,6 +552,7 @@
                     },
                     {
                         "group": "WebSocket API",
+                        "icon": "bolt",
                         "pages": [
                             "api/websocket/overview",
                             "api/websocket/connection",
@@ -426,7 +564,8 @@
                         ]
                     },
                     {
-                        "group": "GraphQL API (Beta)",
+                        "group": "GraphQL API",
+                        "icon": "circle-nodes",
                         "pages": [
                             "api/graphql/overview",
                             "api/graphql/schema",
@@ -437,6 +576,7 @@
                     },
                     {
                         "group": "SDKs",
+                        "icon": "cube",
                         "pages": [
                             "api/sdks/overview",
                             "api/sdks/javascript-typescript",
@@ -448,6 +588,7 @@
                     },
                     {
                         "group": "Event Schemas",
+                        "icon": "diagram-project",
                         "pages": [
                             "api/events/overview",
                             "api/events/user-events",
@@ -466,6 +607,7 @@
                 "groups": [
                     {
                         "group": "Overview",
+                        "icon": "building",
                         "pages": [
                             "enterprise/overview/what-is-enterprise",
                             "enterprise/overview/feature-comparison",
@@ -474,7 +616,8 @@
                         ]
                     },
                     {
-                        "group": "Deployment - Self-Hosted",
+                        "group": "Self-Hosted Deployment",
+                        "icon": "server",
                         "pages": [
                             "enterprise/deployment/self-hosted/overview",
                             "enterprise/deployment/self-hosted/requirements",
@@ -486,7 +629,8 @@
                         ]
                     },
                     {
-                        "group": "Deployment - Cloud Dedicated",
+                        "group": "Cloud Dedicated",
+                        "icon": "cloud",
                         "pages": [
                             "enterprise/deployment/cloud-dedicated/overview",
                             "enterprise/deployment/cloud-dedicated/provisioning",
@@ -496,7 +640,8 @@
                         ]
                     },
                     {
-                        "group": "Deployment - Hybrid",
+                        "group": "Hybrid Deployment",
+                        "icon": "arrows-split-up-and-left",
                         "pages": [
                             "enterprise/deployment/hybrid/overview",
                             "enterprise/deployment/hybrid/architecture",
@@ -506,6 +651,7 @@
                     },
                     {
                         "group": "Security & Compliance",
+                        "icon": "shield-halved",
                         "pages": [
                             "enterprise/security/overview",
                             "enterprise/security/authentication",
@@ -522,6 +668,7 @@
                     },
                     {
                         "group": "Administration",
+                        "icon": "gear",
                         "pages": [
                             "enterprise/admin/overview",
                             "enterprise/admin/user-management",
@@ -533,7 +680,8 @@
                         ]
                     },
                     {
-                        "group": "Integration",
+                        "group": "Identity Integration",
+                        "icon": "id-card",
                         "pages": [
                             "enterprise/integration/overview",
                             "enterprise/integration/ldap-ad",
@@ -547,6 +695,7 @@
                     },
                     {
                         "group": "Monitoring & Operations",
+                        "icon": "chart-line",
                         "pages": [
                             "enterprise/monitoring/overview",
                             "enterprise/monitoring/health-checks",
@@ -559,6 +708,7 @@
                     },
                     {
                         "group": "High Availability",
+                        "icon": "database",
                         "pages": [
                             "enterprise/ha/overview",
                             "enterprise/ha/architecture",
@@ -570,6 +720,7 @@
                     },
                     {
                         "group": "Scalability",
+                        "icon": "arrows-up-down",
                         "pages": [
                             "enterprise/scalability/overview",
                             "enterprise/scalability/horizontal-scaling",
@@ -581,6 +732,7 @@
                     },
                     {
                         "group": "Migration",
+                        "icon": "truck-moving",
                         "pages": [
                             "enterprise/migration/overview",
                             "enterprise/migration/from-cloud",
@@ -591,7 +743,8 @@
                         ]
                     },
                     {
-                        "group": "Support",
+                        "group": "Enterprise Support",
+                        "icon": "life-ring",
                         "pages": [
                             "enterprise/support/overview",
                             "enterprise/support/support-tiers",
@@ -607,7 +760,8 @@
                 "tab": "Internal (Staff)",
                 "groups": [
                     {
-                        "group": "Overview",
+                        "group": "Welcome",
+                        "icon": "door-open",
                         "pages": [
                             "internal/overview/welcome",
                             "internal/overview/team-structure",
@@ -616,7 +770,8 @@
                         ]
                     },
                     {
-                        "group": "Architecture - System Design",
+                        "group": "System Architecture",
+                        "icon": "sitemap",
                         "pages": [
                             "internal/architecture/system-design/overview",
                             "internal/architecture/system-design/domain-services",
@@ -625,11 +780,13 @@
                             "internal/architecture/system-design/operations-architecture",
                             "internal/architecture/system-design/cross-segment-integration",
                             "internal/architecture/system-design/event-driven-architecture",
-                            "internal/architecture/system-design/data-models"
+                            "internal/architecture/system-design/data-models",
+                            "internal/architecture/system-design/office-frontend"
                         ]
                     },
                     {
-                        "group": "Architecture - ADRs",
+                        "group": "Architecture Decisions",
+                        "icon": "scale-balanced",
                         "pages": [
                             "internal/architecture/adrs/overview",
                             "internal/architecture/adrs/adr-001-microservices-architecture",
@@ -642,8 +799,12 @@
                         ]
                     },
                     {
-                        "group": "Architecture - Technical Specs",
+                        "group": "Technical Specifications",
+                        "icon": "file-contract",
                         "pages": [
+                            "internal/architecture/specs/concept-of-operations",
+                            "internal/architecture/specs/technology-strategy",
+                            "internal/architecture/specs/taxonomy-index",
                             "internal/architecture/specs/l1-strategic-specs",
                             "internal/architecture/specs/l2-tactical-specs",
                             "internal/architecture/specs/requirement-traceability",
@@ -651,7 +812,8 @@
                         ]
                     },
                     {
-                        "group": "Engineering - Workflow",
+                        "group": "Engineering Workflow",
+                        "icon": "code-branch",
                         "pages": [
                             "internal/engineering/workflow/overview",
                             "internal/engineering/workflow/issue-templates",
@@ -662,7 +824,8 @@
                         ]
                     },
                     {
-                        "group": "Engineering - Standards",
+                        "group": "Engineering Standards",
+                        "icon": "check-double",
                         "pages": [
                             "internal/engineering/standards/overview",
                             "internal/engineering/standards/go-standards",
@@ -673,7 +836,8 @@
                         ]
                     },
                     {
-                        "group": "Engineering - Ownership",
+                        "group": "Team Ownership",
+                        "icon": "users-gear",
                         "pages": [
                             "internal/engineering/ownership/overview",
                             "internal/engineering/ownership/domain-team",
@@ -684,7 +848,8 @@
                         ]
                     },
                     {
-                        "group": "Engineering - Performance",
+                        "group": "Performance Engineering",
+                        "icon": "gauge-high",
                         "pages": [
                             "internal/engineering/performance/overview",
                             "internal/engineering/performance/benchmarking",
@@ -694,7 +859,8 @@
                         ]
                     },
                     {
-                        "group": "Operations - Incidents",
+                        "group": "Incident Management",
+                        "icon": "triangle-exclamation",
                         "pages": [
                             "internal/operations/incidents/overview",
                             "internal/operations/incidents/severity-levels",
@@ -705,7 +871,8 @@
                         ]
                     },
                     {
-                        "group": "Operations - Releases",
+                        "group": "Release Management",
+                        "icon": "tags",
                         "pages": [
                             "internal/operations/releases/overview",
                             "internal/operations/releases/versioning",
@@ -715,7 +882,8 @@
                         ]
                     },
                     {
-                        "group": "Operations - Capacity",
+                        "group": "Capacity Planning",
+                        "icon": "chart-pie",
                         "pages": [
                             "internal/operations/capacity/overview",
                             "internal/operations/capacity/metrics",
@@ -724,7 +892,8 @@
                         ]
                     },
                     {
-                        "group": "Operations - Cost",
+                        "group": "Cost Management",
+                        "icon": "dollar-sign",
                         "pages": [
                             "internal/operations/cost/overview",
                             "internal/operations/cost/tracking",
@@ -733,7 +902,8 @@
                         ]
                     },
                     {
-                        "group": "Product - Strategy",
+                        "group": "Product Strategy",
+                        "icon": "chess",
                         "pages": [
                             "internal/product/strategy/vision",
                             "internal/product/strategy/roadmap",
@@ -742,7 +912,8 @@
                         ]
                     },
                     {
-                        "group": "Product - Development",
+                        "group": "Product Development",
+                        "icon": "hammer",
                         "pages": [
                             "internal/product/development/discovery",
                             "internal/product/development/planning",
@@ -751,7 +922,8 @@
                         ]
                     },
                     {
-                        "group": "Product - Research",
+                        "group": "User Research",
+                        "icon": "user-magnifying-glass",
                         "pages": [
                             "internal/product/research/overview",
                             "internal/product/research/user-personas",
@@ -761,7 +933,8 @@
                         ]
                     },
                     {
-                        "group": "Security - Practices",
+                        "group": "Security Practices",
+                        "icon": "lock",
                         "pages": [
                             "internal/security/practices/overview",
                             "internal/security/practices/threat-modeling",
@@ -772,7 +945,8 @@
                         ]
                     },
                     {
-                        "group": "Security - Vulnerabilities",
+                        "group": "Vulnerability Management",
+                        "icon": "bug",
                         "pages": [
                             "internal/security/vulnerabilities/overview",
                             "internal/security/vulnerabilities/scanning",
@@ -782,7 +956,8 @@
                         ]
                     },
                     {
-                        "group": "Security - Compliance",
+                        "group": "Security Compliance",
+                        "icon": "certificate",
                         "pages": [
                             "internal/security/compliance/overview",
                             "internal/security/compliance/soc2",
@@ -793,6 +968,7 @@
                     },
                     {
                         "group": "Data & Analytics",
+                        "icon": "chart-bar",
                         "pages": [
                             "internal/analytics/overview",
                             "internal/analytics/metrics-dashboard",
@@ -803,6 +979,7 @@
                     },
                     {
                         "group": "HR & Culture",
+                        "icon": "people-group",
                         "pages": [
                             "internal/hr/onboarding",
                             "internal/hr/engineering-levels",
@@ -814,6 +991,7 @@
                     },
                     {
                         "group": "Legal & Finance",
+                        "icon": "gavel",
                         "pages": [
                             "internal/legal/contracts",
                             "internal/legal/intellectual-property",
@@ -828,6 +1006,11 @@
         ],
         "global": {
             "anchors": [
+                {
+                    "anchor": "API Status",
+                    "href": "https://status.materi.com",
+                    "icon": "signal"
+                },
                 {
                     "anchor": "Community",
                     "href": "https://discord.gg/materi",
@@ -846,7 +1029,7 @@
                 {
                     "anchor": "Changelog",
                     "href": "https://materi.com/changelog",
-                    "icon": "list"
+                    "icon": "list-timeline"
                 }
             ]
         }
@@ -855,11 +1038,50 @@
         "options": ["copy", "view", "chatgpt", "claude", "perplexity", "mcp", "cursor", "vscode"]
     },
     "footer": {
+        "links": [
+            {
+                "title": "Product",
+                "links": [
+                    { "label": "Features", "href": "https://materi.com/features" },
+                    { "label": "Pricing", "href": "https://materi.com/pricing" },
+                    { "label": "Enterprise", "href": "https://enterprise.materi.com" },
+                    { "label": "Changelog", "href": "https://materi.com/changelog" }
+                ]
+            },
+            {
+                "title": "Resources",
+                "links": [
+                    { "label": "Documentation", "href": "/" },
+                    { "label": "API Reference", "href": "/api/introduction/overview" },
+                    { "label": "Status", "href": "https://status.materi.com" },
+                    { "label": "Blog", "href": "https://materi.com/blog" }
+                ]
+            },
+            {
+                "title": "Company",
+                "links": [
+                    { "label": "About", "href": "https://materi.com/about" },
+                    { "label": "Careers", "href": "https://materi.com/careers" },
+                    { "label": "Contact", "href": "https://materi.com/contact" },
+                    { "label": "Security", "href": "https://materi.com/security" }
+                ]
+            },
+            {
+                "title": "Legal",
+                "links": [
+                    { "label": "Privacy", "href": "https://materi.com/privacy" },
+                    { "label": "Terms", "href": "https://materi.com/terms" },
+                    { "label": "DPA", "href": "https://materi.com/dpa" },
+                    { "label": "SLA", "href": "https://materi.com/sla" }
+                ]
+            }
+        ],
         "socials": {
             "x": "https://twitter.com/materi",
             "github": "https://github.com/materi-ai",
             "linkedin": "https://linkedin.com/company/materi",
-            "discord": "https://discord.gg/materi"
+            "discord": "https://discord.gg/materi",
+            "youtube": "https://youtube.com/@materi"
         }
     },
     "redirects": [
@@ -870,6 +1092,37 @@
         {
             "source": "/getting-started",
             "destination": "/quickstart"
+        },
+        {
+            "source": "/api",
+            "destination": "/api/introduction/overview"
+        },
+        {
+            "source": "/developer",
+            "destination": "/developer/introduction/overview"
+        },
+        {
+            "source": "/enterprise",
+            "destination": "/enterprise/overview/what-is-enterprise"
+        },
+        {
+            "source": "/internal",
+            "destination": "/internal/overview/welcome"
+        },
+        {
+            "source": "/customer",
+            "destination": "/customer/overview/what-is-materi"
         }
-    ]
+    ],
+    "integrations": {
+        "intercom": "INTERCOM_APP_ID"
+    },
+    "api": {
+        "baseUrl": "https://api.materi.com",
+        "playground": {
+            "mode": "show"
+        }
+    },
+    "isWhiteLabeled": false,
+    "backgroundImage": "/images/background-gradient.svg"
 }

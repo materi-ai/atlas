@@ -1,97 +1,740 @@
 ---
-title: "Introduction"
-description: "Welcome to the new home for your documentation"
+title: 'Materi Documentation'
+description: 'The AI-native content platform built for teams who ship fast'
+mode: 'custom'
 ---
 
-## Setting up
+<div className="hero-section">
 
-Get your documentation site up and running in minutes.
+# Build. Collaborate. Ship.
 
-<Card
-  title="Start here"
-  icon="rocket"
-  href="/quickstart"
-  horizontal
->
-  Follow our three step quickstart guide.
-</Card>
+<p className="hero-subtitle">
+Materi is the AI-native content platform that combines real-time collaboration, intelligent assistance, and enterprise-grade security—designed for teams who move fast.
+</p>
 
-## Make it yours
+<div className="hero-buttons">
+  <a href="/customer/getting-started/sign-up" className="hero-button-primary">
+    Get Started Free
+  </a>
+  <a href="/developer/introduction/overview" className="hero-button-secondary">
+    View Documentation
+  </a>
+</div>
 
-Design a docs site that looks great and empowers your users.
+</div>
 
-<Columns cols={2}>
-  <Card
-    title="Edit locally"
-    icon="pen-to-square"
-    href="/development"
-  >
-    Edit your docs locally and preview them in real time.
+---
+
+## Platform Architecture
+
+Materi's event-driven architecture ensures real-time collaboration feels instant while maintaining enterprise-grade reliability and auditability.
+
+```mermaid
+flowchart TB
+    subgraph Clients["Client Layer"]
+        direction LR
+        WEB["🌐 Web App<br/>(Canvas)"]
+        MOBILE["📱 Mobile"]
+        SDK["⚙️ SDK/API"]
+    end
+
+    subgraph Gateway["API Gateway"]
+        direction LR
+        LB["Load Balancer"]
+        AUTH["Auth Middleware"]
+        RATE["Rate Limiting"]
+    end
+
+    subgraph Domain["Domain Services"]
+        direction TB
+        API["📡 API Service<br/>(Go/Fiber)"]
+        SHIELD["🛡️ Shield<br/>(Django)"]
+        RELAY["⚡ Relay<br/>(Rust/Axum)"]
+    end
+
+    subgraph Platform["Platform Services"]
+        direction TB
+        ARIA["🤖 Aria AI<br/>(Python)"]
+        PRINTERY["📬 Printery<br/>(Go)"]
+        FOLIO["📊 Folio<br/>(Go)"]
+    end
+
+    subgraph Data["Data Layer"]
+        direction LR
+        PG[("PostgreSQL")]
+        REDIS[("Redis")]
+        S3[("Object Storage")]
+    end
+
+    subgraph Events["Event Backbone"]
+        STREAM["Redis Streams"]
+    end
+
+    Clients --> Gateway
+    Gateway --> Domain
+    Domain <--> Platform
+    Domain <--> Data
+    Domain <--> Events
+    Platform <--> Events
+    Platform <--> Data
+
+    classDef client fill:#e1f5fe,stroke:#01579b
+    classDef gateway fill:#fff3e0,stroke:#e65100
+    classDef domain fill:#e8f5e9,stroke:#2e7d32
+    classDef platform fill:#f3e5f5,stroke:#7b1fa2
+    classDef data fill:#fce4ec,stroke:#c2185b
+    classDef events fill:#fff8e1,stroke:#f9a825
+
+    class WEB,MOBILE,SDK client
+    class LB,AUTH,RATE gateway
+    class API,SHIELD,RELAY domain
+    class ARIA,PRINTERY,FOLIO platform
+    class PG,REDIS,S3 data
+    class STREAM events
+```
+
+---
+
+## Quick Start by Role
+
+<CardGroup cols={3}>
+  <Card title="Product Users" icon="users" href="/customer/overview/what-is-materi">
+    Learn how to use Materi for your team's content workflows.
+
+    **Popular:**
+    - [Create your first document](/customer/getting-started/first-document)
+    - [Set up your workspace](/customer/getting-started/workspace-setup)
+    - [AI features overview](/customer/ai/overview)
   </Card>
-  <Card
-    title="Customize your site"
-    icon="palette"
-    href="/essentials/settings"
-  >
-    Customize the design and colors of your site to match your brand.
-  </Card>
-    <Card
-    title="Set up navigation"
-    icon="map"
-    href="/essentials/navigation"
-  >
-    Organize your docs to help users find what they need and succeed with your product.
-  </Card>
-  <Card
-    title="API documentation"
-    icon="terminal"
-    href="/api-reference/introduction"
-  >
-    Auto-generate API documentation from OpenAPI specifications.
-  </Card>
-</Columns>
 
-## Create beautiful pages
+  <Card title="Developers" icon="code" href="/developer/introduction/overview">
+    Integrate with our APIs, extend functionality, or contribute to the platform.
 
-Everything you need to create world-class documentation.
+    **Popular:**
+    - [API Reference](/api/introduction/overview)
+    - [WebSocket Protocol](/api/websocket/overview)
+    - [Event Schemas](/api/events/overview)
+  </Card>
 
-<Columns cols={2}>
-  <Card
-    title="Write with MDX"
-    icon="pen-fancy"
-    href="/essentials/markdown"
-  >
-    Use MDX to style your docs pages.
-  </Card>
-  <Card
-    title="Code samples"
-    icon="code"
-    href="/essentials/code"
-  >
-    Add sample code to demonstrate how to use your product.
-  </Card>
-  <Card
-    title="Images"
-    icon="image"
-    href="/essentials/images"
-  >
-    Display images and other media.
-  </Card>
-  <Card
-    title="Reusable snippets"
-    icon="recycle"
-    href="/essentials/reusable-snippets"
-  >
-    Write once and reuse across your docs.
-  </Card>
-</Columns>
+  <Card title="Enterprise" icon="building" href="/enterprise/overview/what-is-enterprise">
+    Deploy on your infrastructure with advanced security and compliance.
 
-## Need inspiration?
+    **Popular:**
+    - [Self-hosted deployment](/enterprise/deployment/self-hosted/overview)
+    - [SSO/SAML setup](/enterprise/security/sso-saml)
+    - [High availability](/enterprise/ha/overview)
+  </Card>
+</CardGroup>
 
-<Card
-  title="See complete examples"
-  icon="stars"
-  href="https://mintlify.com/customers"
->
-  Browse our showcase of exceptional documentation sites.
-</Card>
+---
+
+## Real-Time Collaboration
+
+Experience collaboration that feels instantaneous. Multiple users can edit simultaneously with sub-100ms latency.
+
+```mermaid
+sequenceDiagram
+    participant U1 as User A
+    participant R as Relay Service
+    participant U2 as User B
+    participant DB as Database
+
+    rect rgb(230, 245, 255)
+        Note over U1,U2: Real-Time Editing Session
+        U1->>+R: Connect (WebSocket)
+        R->>U1: Session ID + State
+        U2->>+R: Connect (WebSocket)
+        R->>U2: Session ID + State
+    end
+
+    rect rgb(255, 243, 224)
+        Note over U1,U2: Concurrent Editing
+        U1->>R: Insert "Hello" @ pos 0
+        U2->>R: Insert "World" @ pos 0
+        R->>R: Operational Transform
+        R->>U1: Transform: "World" @ pos 5
+        R->>U2: Transform: "Hello" @ pos 0
+    end
+
+    rect rgb(232, 245, 233)
+        Note over U1,DB: Persistence
+        R->>DB: Save Document State
+        DB-->>R: Confirmed
+    end
+```
+
+<Tabs>
+  <Tab title="Presence Awareness">
+    See who's viewing and editing in real-time with colored cursors and selection highlights.
+
+    - **Live cursors** with user avatars
+    - **Selection broadcasting** shows what others are selecting
+    - **Typing indicators** for active editing
+    - **Away/active status** detection
+  </Tab>
+
+  <Tab title="Conflict Resolution">
+    Our Operational Transform (OT) engine ensures edits never collide, even at high concurrency.
+
+    - **Vector clock ordering** for causal consistency
+    - **Automatic merge** of concurrent edits
+    - **No data loss** guarantee
+    - **Sub-second convergence** across clients
+  </Tab>
+
+  <Tab title="Offline Support">
+    Keep working without internet—changes sync when you reconnect.
+
+    - **Local-first** editing experience
+    - **Automatic sync** on reconnection
+    - **Conflict detection** for offline changes
+    - **Version reconciliation** preserves all work
+  </Tab>
+</Tabs>
+
+---
+
+## AI-Powered Intelligence
+
+Aria, our AI service, enhances every part of your content workflow while respecting privacy and safety boundaries.
+
+```mermaid
+flowchart LR
+    subgraph Input["Content Input"]
+        DOC["📄 Document"]
+        CODE["💻 Code Block"]
+        IMG["🖼️ Diagram"]
+    end
+
+    subgraph Aria["🤖 Aria AI Engine"]
+        direction TB
+        ANALYZE["Analysis Pipeline"]
+        SAFETY["Safety Gates"]
+        MODEL["Model Router"]
+    end
+
+    subgraph Output["AI Capabilities"]
+        GEN["✨ Generate"]
+        SUM["📝 Summarize"]
+        ENH["🔧 Enhance"]
+        EXP["💡 Explain"]
+    end
+
+    Input --> Aria
+    Aria --> Output
+
+    ANALYZE --> SAFETY
+    SAFETY --> MODEL
+
+    classDef input fill:#e3f2fd,stroke:#1565c0
+    classDef aria fill:#fce4ec,stroke:#c2185b
+    classDef output fill:#e8f5e9,stroke:#2e7d32
+
+    class DOC,CODE,IMG input
+    class ANALYZE,SAFETY,MODEL aria
+    class GEN,SUM,ENH,EXP output
+```
+
+<CardGroup cols={2}>
+  <Card title="Content Generation" icon="wand-magic-sparkles">
+    Generate first drafts, expand outlines, or create content from prompts.
+
+    ```
+    /ai generate "Write an introduction for our Q4 product roadmap"
+    ```
+  </Card>
+
+  <Card title="Smart Summarization" icon="compress">
+    Get TL;DR summaries of long documents, meeting notes, or research.
+
+    ```
+    /ai summarize --style=executive
+    ```
+  </Card>
+
+  <Card title="Code Analysis" icon="microscope">
+    Explain code, find bugs, generate documentation, or convert between languages.
+
+    ```
+    /ai explain --language=go --detail=high
+    ```
+  </Card>
+
+  <Card title="Enhancement Suggestions" icon="lightbulb">
+    Improve clarity, fix grammar, adjust tone, or restructure content.
+
+    ```
+    /ai enhance --focus=clarity,conciseness
+    ```
+  </Card>
+</CardGroup>
+
+---
+
+## Event-Driven Architecture
+
+Every action in Materi produces events that flow through our reliable event backbone, enabling real-time sync and extensibility.
+
+```mermaid
+flowchart TB
+    subgraph Producers["Event Producers"]
+        API["API Service"]
+        RELAY["Relay Service"]
+        SHIELD["Shield Service"]
+    end
+
+    subgraph EventBus["Event Backbone (Redis Streams)"]
+        direction LR
+        DOC_STREAM["📄 documents"]
+        USER_STREAM["👤 users"]
+        COLLAB_STREAM["🤝 collaboration"]
+        WS_STREAM["🏢 workspaces"]
+    end
+
+    subgraph Consumers["Event Consumers"]
+        PRINTERY["Printery<br/>(Worker)"]
+        FOLIO["Folio<br/>(Observability)"]
+        WEBHOOKS["Webhook<br/>Dispatcher"]
+        SEARCH["Search<br/>Indexer"]
+    end
+
+    Producers --> EventBus
+    EventBus --> Consumers
+
+    classDef producer fill:#e8f5e9,stroke:#2e7d32
+    classDef stream fill:#fff3e0,stroke:#e65100
+    classDef consumer fill:#e3f2fd,stroke:#1565c0
+
+    class API,RELAY,SHIELD producer
+    class DOC_STREAM,USER_STREAM,COLLAB_STREAM,WS_STREAM stream
+    class PRINTERY,FOLIO,WEBHOOKS,SEARCH consumer
+```
+
+<Accordion title="Event Schema Example">
+  All events follow a consistent envelope structure defined in Protocol Buffers:
+
+  ```protobuf
+  message EventEnvelope {
+    string event_id = 1;           // UUID v4
+    string event_type = 2;         // e.g., "document.created"
+    string aggregate_type = 3;     // e.g., "document"
+    string aggregate_id = 4;       // Entity UUID
+    int64 version = 5;             // Aggregate version
+    google.protobuf.Timestamp occurred_at = 6;
+    string correlation_id = 7;     // Request trace ID
+    string causation_id = 8;       // Parent event ID
+    map<string, string> metadata = 9;
+    bytes payload = 10;            // Type-specific payload
+  }
+  ```
+</Accordion>
+
+---
+
+## Security & Compliance
+
+Enterprise-grade security is built into every layer, from authentication to data encryption.
+
+```mermaid
+flowchart TB
+    subgraph Perimeter["Security Perimeter"]
+        direction LR
+        WAF["WAF"]
+        DDoS["DDoS Protection"]
+        TLS["TLS 1.3"]
+    end
+
+    subgraph Identity["Identity Layer"]
+        direction TB
+        AUTH["Authentication"]
+        MFA["MFA/2FA"]
+        SSO["SAML/OIDC SSO"]
+        SCIM["SCIM Provisioning"]
+    end
+
+    subgraph Access["Access Control"]
+        direction TB
+        RBAC["Role-Based Access"]
+        ABAC["Attribute-Based"]
+        PERMS["Document Permissions"]
+    end
+
+    subgraph Data["Data Protection"]
+        direction LR
+        ENC_REST["Encryption at Rest<br/>(AES-256)"]
+        ENC_TRANS["Encryption in Transit<br/>(TLS 1.3)"]
+        AUDIT["Audit Logging"]
+    end
+
+    subgraph Compliance["Compliance"]
+        SOC2["SOC 2 Type II"]
+        GDPR["GDPR"]
+        HIPAA["HIPAA Ready"]
+    end
+
+    Perimeter --> Identity
+    Identity --> Access
+    Access --> Data
+    Data --> Compliance
+
+    classDef perimeter fill:#ffebee,stroke:#c62828
+    classDef identity fill:#e8eaf6,stroke:#3949ab
+    classDef access fill:#e0f2f1,stroke:#00695c
+    classDef data fill:#fff8e1,stroke:#f9a825
+    classDef compliance fill:#f3e5f5,stroke:#7b1fa2
+
+    class WAF,DDoS,TLS perimeter
+    class AUTH,MFA,SSO,SCIM identity
+    class RBAC,ABAC,PERMS access
+    class ENC_REST,ENC_TRANS,AUDIT data
+    class SOC2,GDPR,HIPAA compliance
+```
+
+<CardGroup cols={3}>
+  <Card title="SOC 2 Type II" icon="shield-check">
+    Annual audit of security controls with continuous monitoring.
+  </Card>
+  <Card title="GDPR Compliant" icon="globe-europe">
+    Full data subject rights, EU data residency options.
+  </Card>
+  <Card title="99.99% SLA" icon="chart-line">
+    Enterprise SLA with service credits for breaches.
+  </Card>
+</CardGroup>
+
+---
+
+## Developer Experience
+
+Build on Materi with our comprehensive APIs, SDKs, and developer tools.
+
+<Tabs>
+  <Tab title="REST API">
+    ```bash
+    # Create a document
+    curl -X POST https://api.materi.dev/api/v1/documents \
+      -H "Authorization: Bearer $TOKEN" \
+      -H "Content-Type: application/json" \
+      -d '{
+        "title": "My Document",
+        "content": "Initial content...",
+        "workspace_id": "ws_abc123"
+      }'
+    ```
+
+    Response:
+    ```json
+    {
+      "success": true,
+      "data": {
+        "id": "doc_xyz789",
+        "title": "My Document",
+        "version": 1,
+        "created_at": "2025-01-07T10:00:00Z"
+      }
+    }
+    ```
+  </Tab>
+
+  <Tab title="WebSocket">
+    ```javascript
+    // Connect to real-time collaboration
+    const ws = new WebSocket('wss://relay.materi.dev/ws');
+
+    ws.onopen = () => {
+      ws.send(JSON.stringify({
+        type: 'join',
+        document_id: 'doc_xyz789',
+        token: accessToken
+      }));
+    };
+
+    ws.onmessage = (event) => {
+      const op = JSON.parse(event.data);
+      if (op.type === 'operation') {
+        applyOperation(op.data);
+      }
+    };
+    ```
+  </Tab>
+
+  <Tab title="TypeScript SDK">
+    ```typescript
+    import { Materi } from '@materi/sdk';
+
+    const client = new Materi({
+      apiKey: process.env.MATERI_API_KEY
+    });
+
+    // Create document with AI generation
+    const doc = await client.documents.create({
+      title: 'Q4 Roadmap',
+      workspace_id: 'ws_abc123',
+      content: await client.ai.generate({
+        prompt: 'Write a product roadmap template'
+      })
+    });
+
+    // Subscribe to real-time updates
+    const session = await client.collaborate(doc.id);
+    session.on('operation', (op) => {
+      console.log('Remote edit:', op);
+    });
+    ```
+  </Tab>
+
+  <Tab title="Go SDK">
+    ```go
+    package main
+
+    import (
+        "context"
+        "github.com/materi/materi-go"
+    )
+
+    func main() {
+        client := materi.NewClient(
+            materi.WithAPIKey(os.Getenv("MATERI_API_KEY")),
+        )
+
+        doc, err := client.Documents.Create(context.Background(), &materi.CreateDocumentInput{
+            Title:       "Q4 Roadmap",
+            WorkspaceID: "ws_abc123",
+        })
+        if err != nil {
+            log.Fatal(err)
+        }
+
+        fmt.Printf("Created document: %s\n", doc.ID)
+    }
+    ```
+  </Tab>
+</Tabs>
+
+---
+
+## Service Architecture Deep Dive
+
+<Accordion title="API Service (Go/Fiber)" icon="server">
+  The primary HTTP API handling document management, AI integration, and file operations.
+
+  ```mermaid
+  flowchart LR
+      subgraph API["API Service"]
+          direction TB
+          CTRL["Controllers"]
+          SVC["Services"]
+          REPO["Repositories"]
+
+          CTRL --> SVC
+          SVC --> REPO
+      end
+
+      HTTP["HTTP/REST"] --> CTRL
+      REPO --> PG["PostgreSQL"]
+      REPO --> REDIS["Redis Cache"]
+      SVC --> EVENTS["Event Bus"]
+  ```
+
+  **Key Features:**
+  - Full CRUD for documents, workspaces, users
+  - AI integration via Aria service
+  - File upload with MinIO/S3
+  - Prometheus metrics on port 9090
+</Accordion>
+
+<Accordion title="Shield Service (Django)" icon="shield">
+  Centralized authentication, authorization, and user management.
+
+  ```mermaid
+  flowchart LR
+      subgraph Shield["Shield Service"]
+          direction TB
+          JWT["JWT Issuer"]
+          OAUTH["OAuth 2.0"]
+          SAML["SAML 2.0"]
+          PERMS["Permissions"]
+      end
+
+      CLIENT["Client"] --> JWT
+      IDP["Identity Provider"] --> OAUTH
+      IDP --> SAML
+      API["API Service"] --> PERMS
+  ```
+
+  **Key Features:**
+  - JWT RS256 token issuance
+  - OAuth 2.0 / SAML 2.0 SSO
+  - RBAC permission management
+  - GDPR compliance tools
+</Accordion>
+
+<Accordion title="Relay Service (Rust/Axum)" icon="bolt">
+  Real-time collaboration via WebSocket with Operational Transform.
+
+  ```mermaid
+  flowchart LR
+      subgraph Relay["Relay Service"]
+          direction TB
+          WS["WebSocket Handler"]
+          OT["OT Engine"]
+          PRESENCE["Presence Tracker"]
+
+          WS --> OT
+          WS --> PRESENCE
+      end
+
+      CLIENT["Clients"] <--> WS
+      OT --> PG["PostgreSQL"]
+      PRESENCE --> REDIS["Redis Pub/Sub"]
+  ```
+
+  **Key Features:**
+  - Sub-100ms operation latency
+  - Vector clock conflict resolution
+  - Horizontal scaling via Redis pub/sub
+  - Automatic reconnection handling
+</Accordion>
+
+<Accordion title="Aria Service (Python)" icon="robot">
+  AI capabilities including generation, summarization, and code analysis.
+
+  ```mermaid
+  flowchart LR
+      subgraph Aria["Aria AI Service"]
+          direction TB
+          ROUTER["Model Router"]
+          SAFETY["Safety Gates"]
+          CACHE["Response Cache"]
+
+          ROUTER --> SAFETY
+          SAFETY --> CACHE
+      end
+
+      API["API Service"] --> ROUTER
+      ROUTER --> OPENAI["OpenAI"]
+      ROUTER --> ANTHROPIC["Anthropic"]
+      CACHE --> REDIS["Redis"]
+  ```
+
+  **Key Features:**
+  - Multi-model support (GPT-4, Claude)
+  - Content safety filtering
+  - Streaming responses
+  - Graceful degradation
+</Accordion>
+
+---
+
+## Performance Metrics
+
+<CardGroup cols={4}>
+  <Card title="API Latency" icon="gauge-high">
+    **< 200ms** p95
+
+    Average response time for REST API calls
+  </Card>
+  <Card title="Sync Latency" icon="bolt">
+    **< 100ms** p99
+
+    Real-time operation propagation
+  </Card>
+  <Card title="Uptime" icon="server">
+    **99.99%** SLA
+
+    Enterprise availability guarantee
+  </Card>
+  <Card title="Scale" icon="users">
+    **10K+** concurrent
+
+    Users per document session
+  </Card>
+</CardGroup>
+
+---
+
+## Documentation Sections
+
+<CardGroup cols={2}>
+  <Card title="Customer Documentation" icon="book-open" href="/customer/overview/what-is-materi">
+    Product guides for end users covering workspace setup, document management, collaboration features, AI capabilities, and integrations.
+  </Card>
+
+  <Card title="Developer Guide" icon="code" href="/developer/introduction/overview">
+    Technical documentation for integrators and contributors covering architecture, APIs, service details, and development workflows.
+  </Card>
+
+  <Card title="API Reference" icon="terminal" href="/api/introduction/overview">
+    Complete REST, WebSocket, and GraphQL API reference with request/response schemas, authentication, and SDKs.
+  </Card>
+
+  <Card title="Enterprise" icon="building" href="/enterprise/overview/what-is-enterprise">
+    Self-hosted deployment, security hardening, compliance certifications, and enterprise administration guides.
+  </Card>
+</CardGroup>
+
+---
+
+## Latest Updates
+
+<Accordion title="v2.5.0 - AI Context Windows" icon="wand-magic-sparkles">
+  **Released: January 2025**
+
+  - Extended AI context window to 128K tokens
+  - New `/ai analyze` command for code review
+  - Improved summarization for long documents
+  - 40% faster AI response times
+</Accordion>
+
+<Accordion title="v2.4.0 - Enhanced Collaboration" icon="users">
+  **Released: December 2024**
+
+  - Offline mode with automatic sync
+  - Improved conflict resolution algorithm
+  - Real-time comments and mentions
+  - Mobile app support (iOS/Android)
+</Accordion>
+
+<Accordion title="v2.3.0 - Enterprise Features" icon="building">
+  **Released: November 2024**
+
+  - SCIM 2.0 user provisioning
+  - Custom data retention policies
+  - Advanced audit log export
+  - IP allowlisting
+</Accordion>
+
+---
+
+## Community & Support
+
+<CardGroup cols={3}>
+  <Card title="Discord Community" icon="discord" href="https://discord.gg/materi">
+    Join 5,000+ users discussing workflows, integrations, and tips.
+  </Card>
+
+  <Card title="GitHub" icon="github" href="https://github.com/materi-ai">
+    Report issues, request features, or contribute to open-source components.
+  </Card>
+
+  <Card title="Status Page" icon="signal" href="https://status.materi.com">
+    Real-time system status and incident history.
+  </Card>
+</CardGroup>
+
+---
+
+<div className="footer-cta">
+
+## Ready to get started?
+
+<CardGroup cols={2}>
+  <Card title="Start Free" icon="rocket" href="/customer/getting-started/sign-up">
+    Create an account in 30 seconds. No credit card required.
+  </Card>
+  <Card title="Talk to Sales" icon="phone" href="/customer/support/contact-support">
+    Get a demo and discuss enterprise requirements.
+  </Card>
+</CardGroup>
+
+</div>
