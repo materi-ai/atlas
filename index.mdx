@@ -1,27 +1,20 @@
 ---
 title: 'Materi Documentation'
 description: 'The AI-native content platform built for teams who ship fast'
-mode: 'custom'
 ---
-
-<div className="hero-section">
 
 # Build. Collaborate. Ship.
 
-<p className="hero-subtitle">
 Materi is the AI-native content platform that combines real-time collaboration, intelligent assistance, and enterprise-grade security—designed for teams who move fast.
-</p>
 
-<div className="hero-buttons">
-  <a href="/customer/getting-started/sign-up" className="hero-button-primary">
-    Get Started Free
-  </a>
-  <a href="/developer/introduction/overview" className="hero-button-secondary">
-    View Documentation
-  </a>
-</div>
-
-</div>
+<CardGroup cols={2}>
+  <Card title="Get Started Free" icon="rocket" href="/customer/getting-started/sign-up">
+    Create your account in 30 seconds
+  </Card>
+  <Card title="View Documentation" icon="book" href="/developer/introduction/overview">
+    Explore our technical guides
+  </Card>
+</CardGroup>
 
 ---
 
@@ -29,13 +22,14 @@ Materi is the AI-native content platform that combines real-time collaboration, 
 
 Materi's event-driven architecture ensures real-time collaboration feels instant while maintaining enterprise-grade reliability and auditability.
 
+<Frame>
 ```mermaid
 flowchart TB
     subgraph Clients["Client Layer"]
         direction LR
-        WEB["🌐 Web App<br/>(Canvas)"]
-        MOBILE["📱 Mobile"]
-        SDK["⚙️ SDK/API"]
+        WEB["Web App"]
+        MOBILE["Mobile"]
+        SDK["SDK/API"]
     end
 
     subgraph Gateway["API Gateway"]
@@ -47,16 +41,16 @@ flowchart TB
 
     subgraph Domain["Domain Services"]
         direction TB
-        API["📡 API Service<br/>(Go/Fiber)"]
-        SHIELD["🛡️ Shield<br/>(Django)"]
-        RELAY["⚡ Relay<br/>(Rust/Axum)"]
+        API["API Service<br/>Go/Fiber"]
+        SHIELD["Shield<br/>Django"]
+        RELAY["Relay<br/>Rust/Axum"]
     end
 
     subgraph Platform["Platform Services"]
         direction TB
-        ARIA["🤖 Aria AI<br/>(Python)"]
-        PRINTERY["📬 Printery<br/>(Go)"]
-        FOLIO["📊 Folio<br/>(Go)"]
+        ARIA["Aria AI<br/>Python"]
+        PRINTERY["Printery<br/>Go"]
+        FOLIO["Folio<br/>Go"]
     end
 
     subgraph Data["Data Layer"]
@@ -92,6 +86,7 @@ flowchart TB
     class PG,REDIS,S3 data
     class STREAM events
 ```
+</Frame>
 
 ---
 
@@ -132,6 +127,7 @@ flowchart TB
 
 Experience collaboration that feels instantaneous. Multiple users can edit simultaneously with sub-100ms latency.
 
+<Frame>
 ```mermaid
 sequenceDiagram
     participant U1 as User A
@@ -139,29 +135,24 @@ sequenceDiagram
     participant U2 as User B
     participant DB as Database
 
-    rect rgb(230, 245, 255)
-        Note over U1,U2: Real-Time Editing Session
-        U1->>+R: Connect (WebSocket)
-        R->>U1: Session ID + State
-        U2->>+R: Connect (WebSocket)
-        R->>U2: Session ID + State
-    end
+    Note over U1,U2: Real-Time Editing Session
+    U1->>+R: Connect WebSocket
+    R->>U1: Session ID + State
+    U2->>+R: Connect WebSocket
+    R->>U2: Session ID + State
 
-    rect rgb(255, 243, 224)
-        Note over U1,U2: Concurrent Editing
-        U1->>R: Insert "Hello" @ pos 0
-        U2->>R: Insert "World" @ pos 0
-        R->>R: Operational Transform
-        R->>U1: Transform: "World" @ pos 5
-        R->>U2: Transform: "Hello" @ pos 0
-    end
+    Note over U1,U2: Concurrent Editing
+    U1->>R: Insert Hello at pos 0
+    U2->>R: Insert World at pos 0
+    R->>R: Operational Transform
+    R->>U1: Transform World at pos 5
+    R->>U2: Transform Hello at pos 0
 
-    rect rgb(232, 245, 233)
-        Note over U1,DB: Persistence
-        R->>DB: Save Document State
-        DB-->>R: Confirmed
-    end
+    Note over U1,DB: Persistence
+    R->>DB: Save Document State
+    DB-->>R: Confirmed
 ```
+</Frame>
 
 <Tabs>
   <Tab title="Presence Awareness">
@@ -198,15 +189,16 @@ sequenceDiagram
 
 Aria, our AI service, enhances every part of your content workflow while respecting privacy and safety boundaries.
 
+<Frame>
 ```mermaid
 flowchart LR
     subgraph Input["Content Input"]
-        DOC["📄 Document"]
-        CODE["💻 Code Block"]
-        IMG["🖼️ Diagram"]
+        DOC["Document"]
+        CODE["Code Block"]
+        IMG["Diagram"]
     end
 
-    subgraph Aria["🤖 Aria AI Engine"]
+    subgraph Aria["Aria AI Engine"]
         direction TB
         ANALYZE["Analysis Pipeline"]
         SAFETY["Safety Gates"]
@@ -214,10 +206,10 @@ flowchart LR
     end
 
     subgraph Output["AI Capabilities"]
-        GEN["✨ Generate"]
-        SUM["📝 Summarize"]
-        ENH["🔧 Enhance"]
-        EXP["💡 Explain"]
+        GEN["Generate"]
+        SUM["Summarize"]
+        ENH["Enhance"]
+        EXP["Explain"]
     end
 
     Input --> Aria
@@ -234,6 +226,7 @@ flowchart LR
     class ANALYZE,SAFETY,MODEL aria
     class GEN,SUM,ENH,EXP output
 ```
+</Frame>
 
 <CardGroup cols={2}>
   <Card title="Content Generation" icon="wand-magic-sparkles">
@@ -275,6 +268,7 @@ flowchart LR
 
 Every action in Materi produces events that flow through our reliable event backbone, enabling real-time sync and extensibility.
 
+<Frame>
 ```mermaid
 flowchart TB
     subgraph Producers["Event Producers"]
@@ -283,19 +277,19 @@ flowchart TB
         SHIELD["Shield Service"]
     end
 
-    subgraph EventBus["Event Backbone (Redis Streams)"]
+    subgraph EventBus["Event Backbone - Redis Streams"]
         direction LR
-        DOC_STREAM["📄 documents"]
-        USER_STREAM["👤 users"]
-        COLLAB_STREAM["🤝 collaboration"]
-        WS_STREAM["🏢 workspaces"]
+        DOC_STREAM["documents"]
+        USER_STREAM["users"]
+        COLLAB_STREAM["collaboration"]
+        WS_STREAM["workspaces"]
     end
 
     subgraph Consumers["Event Consumers"]
-        PRINTERY["Printery<br/>(Worker)"]
-        FOLIO["Folio<br/>(Observability)"]
-        WEBHOOKS["Webhook<br/>Dispatcher"]
-        SEARCH["Search<br/>Indexer"]
+        PRINTERY["Printery Worker"]
+        FOLIO["Folio Observability"]
+        WEBHOOKS["Webhook Dispatcher"]
+        SEARCH["Search Indexer"]
     end
 
     Producers --> EventBus
@@ -309,6 +303,7 @@ flowchart TB
     class DOC_STREAM,USER_STREAM,COLLAB_STREAM,WS_STREAM stream
     class PRINTERY,FOLIO,WEBHOOKS,SEARCH consumer
 ```
+</Frame>
 
 <Accordion title="Event Schema Example">
   All events follow a consistent envelope structure defined in Protocol Buffers:
@@ -331,10 +326,11 @@ flowchart TB
 
 ---
 
-## Security & Compliance
+## Security and Compliance
 
 Enterprise-grade security is built into every layer, from authentication to data encryption.
 
+<Frame>
 ```mermaid
 flowchart TB
     subgraph Perimeter["Security Perimeter"]
@@ -359,10 +355,10 @@ flowchart TB
         PERMS["Document Permissions"]
     end
 
-    subgraph Data["Data Protection"]
+    subgraph DataProt["Data Protection"]
         direction LR
-        ENC_REST["Encryption at Rest<br/>(AES-256)"]
-        ENC_TRANS["Encryption in Transit<br/>(TLS 1.3)"]
+        ENC_REST["Encryption at Rest AES-256"]
+        ENC_TRANS["Encryption in Transit TLS 1.3"]
         AUDIT["Audit Logging"]
     end
 
@@ -374,8 +370,8 @@ flowchart TB
 
     Perimeter --> Identity
     Identity --> Access
-    Access --> Data
-    Data --> Compliance
+    Access --> DataProt
+    DataProt --> Compliance
 
     classDef perimeter fill:#ffebee,stroke:#c62828
     classDef identity fill:#e8eaf6,stroke:#3949ab
@@ -389,12 +385,13 @@ flowchart TB
     class ENC_REST,ENC_TRANS,AUDIT data
     class SOC2,GDPR,HIPAA compliance
 ```
+</Frame>
 
 <CardGroup cols={3}>
   <Card title="SOC 2 Type II" icon="shield-check">
     Annual audit of security controls with continuous monitoring.
   </Card>
-  <Card title="GDPR Compliant" icon="globe-europe">
+  <Card title="GDPR Compliant" icon="globe">
     Full data subject rights, EU data residency options.
   </Card>
   <Card title="99.99% SLA" icon="chart-line">
@@ -513,116 +510,49 @@ Build on Materi with our comprehensive APIs, SDKs, and developer tools.
 
 ---
 
-## Service Architecture Deep Dive
+## Service Architecture
 
-<Accordion title="API Service (Go/Fiber)" icon="server">
-  The primary HTTP API handling document management, AI integration, and file operations.
+<AccordionGroup>
+  <Accordion title="API Service (Go/Fiber)" icon="server">
+    The primary HTTP API handling document management, AI integration, and file operations.
 
-  ```mermaid
-  flowchart LR
-      subgraph API["API Service"]
-          direction TB
-          CTRL["Controllers"]
-          SVC["Services"]
-          REPO["Repositories"]
+    **Key Features:**
+    - Full CRUD for documents, workspaces, users
+    - AI integration via Aria service
+    - File upload with MinIO/S3
+    - Prometheus metrics on port 9090
+  </Accordion>
 
-          CTRL --> SVC
-          SVC --> REPO
-      end
+  <Accordion title="Shield Service (Django)" icon="shield">
+    Centralized authentication, authorization, and user management.
 
-      HTTP["HTTP/REST"] --> CTRL
-      REPO --> PG["PostgreSQL"]
-      REPO --> REDIS["Redis Cache"]
-      SVC --> EVENTS["Event Bus"]
-  ```
+    **Key Features:**
+    - JWT RS256 token issuance
+    - OAuth 2.0 / SAML 2.0 SSO
+    - RBAC permission management
+    - GDPR compliance tools
+  </Accordion>
 
-  **Key Features:**
-  - Full CRUD for documents, workspaces, users
-  - AI integration via Aria service
-  - File upload with MinIO/S3
-  - Prometheus metrics on port 9090
-</Accordion>
+  <Accordion title="Relay Service (Rust/Axum)" icon="bolt">
+    Real-time collaboration via WebSocket with Operational Transform.
 
-<Accordion title="Shield Service (Django)" icon="shield">
-  Centralized authentication, authorization, and user management.
+    **Key Features:**
+    - Sub-100ms operation latency
+    - Vector clock conflict resolution
+    - Horizontal scaling via Redis pub/sub
+    - Automatic reconnection handling
+  </Accordion>
 
-  ```mermaid
-  flowchart LR
-      subgraph Shield["Shield Service"]
-          direction TB
-          JWT["JWT Issuer"]
-          OAUTH["OAuth 2.0"]
-          SAML["SAML 2.0"]
-          PERMS["Permissions"]
-      end
+  <Accordion title="Aria Service (Python)" icon="robot">
+    AI capabilities including generation, summarization, and code analysis.
 
-      CLIENT["Client"] --> JWT
-      IDP["Identity Provider"] --> OAUTH
-      IDP --> SAML
-      API["API Service"] --> PERMS
-  ```
-
-  **Key Features:**
-  - JWT RS256 token issuance
-  - OAuth 2.0 / SAML 2.0 SSO
-  - RBAC permission management
-  - GDPR compliance tools
-</Accordion>
-
-<Accordion title="Relay Service (Rust/Axum)" icon="bolt">
-  Real-time collaboration via WebSocket with Operational Transform.
-
-  ```mermaid
-  flowchart LR
-      subgraph Relay["Relay Service"]
-          direction TB
-          WS["WebSocket Handler"]
-          OT["OT Engine"]
-          PRESENCE["Presence Tracker"]
-
-          WS --> OT
-          WS --> PRESENCE
-      end
-
-      CLIENT["Clients"] <--> WS
-      OT --> PG["PostgreSQL"]
-      PRESENCE --> REDIS["Redis Pub/Sub"]
-  ```
-
-  **Key Features:**
-  - Sub-100ms operation latency
-  - Vector clock conflict resolution
-  - Horizontal scaling via Redis pub/sub
-  - Automatic reconnection handling
-</Accordion>
-
-<Accordion title="Aria Service (Python)" icon="robot">
-  AI capabilities including generation, summarization, and code analysis.
-
-  ```mermaid
-  flowchart LR
-      subgraph Aria["Aria AI Service"]
-          direction TB
-          ROUTER["Model Router"]
-          SAFETY["Safety Gates"]
-          CACHE["Response Cache"]
-
-          ROUTER --> SAFETY
-          SAFETY --> CACHE
-      end
-
-      API["API Service"] --> ROUTER
-      ROUTER --> OPENAI["OpenAI"]
-      ROUTER --> ANTHROPIC["Anthropic"]
-      CACHE --> REDIS["Redis"]
-  ```
-
-  **Key Features:**
-  - Multi-model support (GPT-4, Claude)
-  - Content safety filtering
-  - Streaming responses
-  - Graceful degradation
-</Accordion>
+    **Key Features:**
+    - Multi-model support (GPT-4, Claude)
+    - Content safety filtering
+    - Streaming responses
+    - Graceful degradation
+  </Accordion>
+</AccordionGroup>
 
 ---
 
@@ -677,36 +607,38 @@ Build on Materi with our comprehensive APIs, SDKs, and developer tools.
 
 ## Latest Updates
 
-<Accordion title="v2.5.0 - AI Context Windows" icon="wand-magic-sparkles">
-  **Released: January 2025**
+<AccordionGroup>
+  <Accordion title="v2.5.0 - AI Context Windows" icon="wand-magic-sparkles">
+    **Released: January 2025**
 
-  - Extended AI context window to 128K tokens
-  - New `/ai analyze` command for code review
-  - Improved summarization for long documents
-  - 40% faster AI response times
-</Accordion>
+    - Extended AI context window to 128K tokens
+    - New `/ai analyze` command for code review
+    - Improved summarization for long documents
+    - 40% faster AI response times
+  </Accordion>
 
-<Accordion title="v2.4.0 - Enhanced Collaboration" icon="users">
-  **Released: December 2024**
+  <Accordion title="v2.4.0 - Enhanced Collaboration" icon="users">
+    **Released: December 2024**
 
-  - Offline mode with automatic sync
-  - Improved conflict resolution algorithm
-  - Real-time comments and mentions
-  - Mobile app support (iOS/Android)
-</Accordion>
+    - Offline mode with automatic sync
+    - Improved conflict resolution algorithm
+    - Real-time comments and mentions
+    - Mobile app support (iOS/Android)
+  </Accordion>
 
-<Accordion title="v2.3.0 - Enterprise Features" icon="building">
-  **Released: November 2024**
+  <Accordion title="v2.3.0 - Enterprise Features" icon="building">
+    **Released: November 2024**
 
-  - SCIM 2.0 user provisioning
-  - Custom data retention policies
-  - Advanced audit log export
-  - IP allowlisting
-</Accordion>
+    - SCIM 2.0 user provisioning
+    - Custom data retention policies
+    - Advanced audit log export
+    - IP allowlisting
+  </Accordion>
+</AccordionGroup>
 
 ---
 
-## Community & Support
+## Community and Support
 
 <CardGroup cols={3}>
   <Card title="Discord Community" icon="discord" href="https://discord.gg/materi">
@@ -724,8 +656,6 @@ Build on Materi with our comprehensive APIs, SDKs, and developer tools.
 
 ---
 
-<div className="footer-cta">
-
 ## Ready to get started?
 
 <CardGroup cols={2}>
@@ -736,5 +666,3 @@ Build on Materi with our comprehensive APIs, SDKs, and developer tools.
     Get a demo and discuss enterprise requirements.
   </Card>
 </CardGroup>
-
-</div>
